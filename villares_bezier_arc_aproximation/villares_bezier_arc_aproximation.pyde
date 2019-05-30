@@ -5,7 +5,7 @@
 """
 
 radius = 300  # radius of the circular arc
-cx = 340  # center poof the circular arc
+cx = 340  # center of the circular arc
 cy = 340
 
 def setup():
