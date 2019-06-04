@@ -1,20 +1,26 @@
 # -*- coding: utf-8 -*-
 
-def b_poly_arc_augmented(p_list, or_list):
-    r_list = or_list[:]
-    a_list = []
-
+def b_poly_arc_augmented(op_list, or_list):
+    a_list, p_list, r_list = [], [], []
+    # remove overlapping adjacent points
+    for i1, p1 in enumerate(op_list):
+        i2 = (i1 + 1) % len(op_list)
+        p2, r1 = op_list[i2], or_list[i1]
+        if p1 != p2:
+            p_list.append(p1)
+            r_list.append(r1)            
+    # reduce radius that won't fit        
     for i1, p1 in enumerate(p_list):
         i2 = (i1 + 1) % len(p_list)
         p2, r2, r1 = p_list[i2], r_list[i2], r_list[i1]
         r_list[i1], r_list[i2] = reduce_radius(p1, p2, r1, r2)
-
+    # calculate the tangents
     for i1, p1 in enumerate(p_list):
         i2 = (i1 + 1) % len(p_list)
         p2, r2, r1 = p_list[i2], r_list[i2], r_list[i1]
         a = circ_circ_tangent(p1, p2, r1, r2)
         a_list.append(a)
-
+    # draw 
     beginShape()
     for i1, _ in enumerate(a_list):
         i2 = (i1 + 1) % len(a_list)
@@ -66,7 +72,6 @@ def circ_circ_tangent(p1, p2, r1, r2):
         return (None,
                 (p1[0], p1[1]),
                 (p2[0], p2[1]))
-
 
 def b_poly_filleted(p_list, r_list=None, open_poly=False):
     """
