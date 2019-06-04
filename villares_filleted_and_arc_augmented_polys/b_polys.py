@@ -1,26 +1,29 @@
 # -*- coding: utf-8 -*-
 
 def b_poly_arc_augmented(op_list, or_list):
-    a_list, p_list, r_list = [], [], []
+    assert len(op_list) == len(or_list), \
+        "Number of points and radii not the same"
     # remove overlapping adjacent points
+    p_list, r_list = [], []
     for i1, p1 in enumerate(op_list):
         i2 = (i1 + 1) % len(op_list)
-        p2, r1 = op_list[i2], or_list[i1]
-        if p1 != p2:
+        p2, r2, r1 = op_list[i2], or_list[i2], or_list[i1]
+        if dist(p1[0], p1[1], p2[0], p2[1]) > 1: # or p1 != p2:
             p_list.append(p1)
-            r_list.append(r1)            
-    # reduce radius that won't fit        
+            r_list.append(min(r1, r2))
+    # reduce radius that won't fit
     for i1, p1 in enumerate(p_list):
         i2 = (i1 + 1) % len(p_list)
         p2, r2, r1 = p_list[i2], r_list[i2], r_list[i1]
-        r_list[i1], r_list[i2] = reduce_radius(p1, p2, r1, r2)
+        r_list[i1], r_list[i2] = reduce_radius(p1, p2, r1, r2)    
     # calculate the tangents
+    a_list = [] 
     for i1, p1 in enumerate(p_list):
         i2 = (i1 + 1) % len(p_list)
         p2, r2, r1 = p_list[i2], r_list[i2], r_list[i1]
         a = circ_circ_tangent(p1, p2, r1, r2)
         a_list.append(a)
-    # draw 
+    # draw
     beginShape()
     for i1, _ in enumerate(a_list):
         i2 = (i1 + 1) % len(a_list)
@@ -42,12 +45,12 @@ def b_poly_arc_augmented(op_list, or_list):
 
 def reduce_radius(p1, p2, r1, r2):
     d = dist(p1[0], p1[1], p2[0], p2[1])
-    ri = abs(r1 - r2) * 1.01 # :(
+    ri = abs(r1 - r2)
     if d - ri < 0:
         if r1 > r2:
-            r1 = map(d, ri, 0, r1, r2)
+            r1 = map(d, ri + 1, 0, r1, r2)
         else:
-            r2 = map(d, ri, 0, r2, r1)
+            r2 = map(d, ri + 1, 0, r2, r1)
     return(r1, r2)
 
 def circ_circ_tangent(p1, p2, r1, r2):
@@ -73,13 +76,24 @@ def circ_circ_tangent(p1, p2, r1, r2):
                 (p1[0], p1[1]),
                 (p2[0], p2[1]))
 
-def b_poly_filleted(p_list, r_list=None, open_poly=False):
+def b_poly_filleted(op_list, or_list=None, open_poly=False):
     """
     draws a 'filleted' polygon with variable radius
     dependent on roundedCorner()
     """
-    if not r_list:
-        r_list = [0] * len(p_list)
+    if not or_list:
+        or_list = [0] * len(op_list)
+    assert len(op_list) == len(or_list), \
+        "Number of points and radii not the same"
+    # remove overlapping adjacent points
+    p_list, r_list = [], []
+    for i1, p1 in enumerate(op_list):
+        i2 = (i1 + 1) % len(op_list)
+        p2, r1 = op_list[i2], or_list[i1]
+        if dist(p1[0], p1[1], p2[0], p2[1]) > 1: # or p1 != p2:
+            p_list.append(p1)
+            r_list.append(r1)            
+    # draw
     beginShape()
     for p0, p1, p2, r in zip(p_list,
                              [p_list[-1]] + p_list[:-1],

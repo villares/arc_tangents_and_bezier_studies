@@ -3,10 +3,8 @@
 from polys import poly, poly_filleted, poly_arc_augmented
 from b_polys import b_poly_filleted, b_poly_arc_augmented
 
-
-
-p_list = [(100, 100), (400, 200), (300, 400), (200, 100), (100, 300)]
-rad_list = [80, 40, 20, 50, 10] 
+p_list = [(100, 100), (400, 200), (300, 400), (100, 300)]
+rad_list = [40, 80, 20, 50] 
 
 def setup():
     size(500, 500)
