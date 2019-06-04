@@ -1,26 +1,50 @@
 # -*- coding: utf-8 -*-
 
-def b_poly_arc_augmented(p_list, r_list):
+def b_poly_arc_augmented(p_list, or_list):
+    r_list = or_list[:]
     a_list = []
-    for i1 in range(len(p_list)):
+    
+    for i1, p1 in enumerate(p_list):
         i2 = (i1 + 1) % len(p_list)
-        p1, p2, r1, r2 = p_list[i1], p_list[i2], r_list[i1], r_list[i2]
+        p2, r2, r1 = p_list[i2], r_list[i2], r_list[i1]
+        r_list[i1], r_list[i2] = reduce_radius(p1, p2, r1, r2)
+
+    for i1, p1 in enumerate(p_list):
+        i2 = (i1 + 1) % len(p_list)
+        p2, r2, r1 = p_list[i2], r_list[i2], r_list[i1]
         a = circ_circ_tangent(p1, p2, r1, r2)
         a_list.append(a)
-        # ellipse(p1[0], p1[1], 2, 2)
 
+    beginShape()
     for i1, _ in enumerate(a_list):
         i2 = (i1 + 1) % len(a_list)
         p1, p2, r1, r2 = p_list[i1], p_list[i2], r_list[i1], r_list[i2]
-        #ellipse(p1[0], p1[1], r1 * 2, r1 * 2)
-        a1 = a_list[i1]
-        a2 = a_list[i2]
+        a1, P11, P12 = a_list[i1]
+        a2, P21, P22 = a_list[i2]
         if a1 and a2:
             start = a1 if a1 < a2 else a1 - TWO_PI
-            b_arc(p2[0], p2[1], r2 * 2, r2 * 2, start, a2)
+            b_arc(p2[0], p2[1], r2 * 2, r2 * 2, start, a2, arc_type=2)
         else:
-            ellipse(p2[0], p2[1], r2 * 2, r2 * 2)
+            # ellipse(p2[0], p2[1], r2 * 2, r2 * 2)
+            if a1:
+                vertex(P12[0], P12[1])
+            if a2:
+                vertex(P21[0], P21[1])
+    endShape(CLOSE)
 
+def reduce_radius(p1, p2, r1, r2):
+    d = dist(p1[0], p1[1], p2[0], p2[1])
+    ri = r1 - r2
+    delta = d - abs(ri)
+    if delta > 0:
+        return(r1, r2)
+    else:
+        if r2 > r1:
+             r2 += delta * 2
+        else:
+             r1 += delta * 2
+        print(r1, r2, d, ri, delta)
+        return(r1, r2)
 
 def circ_circ_tangent(p1, p2, r1, r2):
     d = dist(p1[0], p1[1], p2[0], p2[1])
@@ -28,22 +52,23 @@ def circ_circ_tangent(p1, p2, r1, r2):
     line_angle = atan2(p1[0] - p2[0], p2[1] - p1[1])
     if d > abs(ri):
         theta = asin(ri / float(d))
-
         x1 = cos(line_angle - theta) * r1
         y1 = sin(line_angle - theta) * r1
         x2 = cos(line_angle - theta) * r2
         y2 = sin(line_angle - theta) * r2
-        # line(p1[0] - x1, p1[1] - y1, p2[0] - x2, p2[1] - y2)
-
         x1 = -cos(line_angle + theta) * r1
         y1 = -sin(line_angle + theta) * r1
         x2 = -cos(line_angle + theta) * r2
         y2 = -sin(line_angle + theta) * r2
-        line(p1[0] - x1, p1[1] - y1, p2[0] - x2, p2[1] - y2)
-        return (line_angle + theta)
+        # line(p1[0] - x1, p1[1] - y1, p2[0] - x2, p2[1] - y2)
+        return (line_angle + theta,
+                (p1[0] - x1, p1[1] - y1),
+                (p2[0] - x2, p2[1] - y2))
     else:
-        line(p1[0], p1[1], p2[0], p2[1])
-        return None
+        # line(p1[0], p1[1], p2[0], p2[1])
+        return (None,
+                (p1[0], p1[1]),
+                (p2[0], p2[1]))
 
 
 def b_poly_filleted(p_list, r_list=None, open_poly=False):
@@ -125,12 +150,12 @@ def b_roundedCorner(pc, p2, p1, r):
         startAngle, endAngle = endAngle, startAngle
         sweepAngle = TWO_PI - sweepAngle
         # ellipse(pc[0], pc[1], 25, 25)
-        
+
     if (A and not B) or (B and not A):
         startAngle, endAngle = endAngle, startAngle
         sweepAngle = -sweepAngle
         # ellipse(pc[0], pc[1], 5, 5)
-        
+
     b_arc(circlePoint[0], circlePoint[1], 2 * max_r, 2 * max_r,
           startAngle, startAngle + sweepAngle, arc_type=2)
 

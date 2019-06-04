@@ -46,15 +46,15 @@ def circ_circ_tangent(p1, p2, r1, r2):
         x2 = cos(line_angle - theta) * r2
         y2 = sin(line_angle - theta) * r2
         # line(p1[0] - x1, p1[1] - y1, p2[0] - x2, p2[1] - y2)
-
+    
         x1 = -cos(line_angle + theta) * r1
         y1 = -sin(line_angle + theta) * r1
         x2 = -cos(line_angle + theta) * r2
         y2 = -sin(line_angle + theta) * r2
         line(p1[0] - x1, p1[1] - y1, p2[0] - x2, p2[1] - y2)
-        return (line_angle + theta)
+        return line_angle + theta
     else:
-        # line(p1[0], p1[1], p2[0], p2[1])
+    #     # line(p1[0], p1[1], p2[0], p2[1])
         return None
 
 
