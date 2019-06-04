@@ -14,14 +14,14 @@ def poly(p_list, closed=True):
 
 def poly_arc_augmented(p_list, r_list):
     a_list = []
-    for i1 in range(len(p_list)):
+    for i1, p1 in enumerate(p_list):
         i2 = (i1 + 1) % len(p_list)
-        p1, p2, r1, r2 = p_list[i1], p_list[i2], r_list[i1], r_list[i2]
+        p2, r2, r1 =  p_list[i2], r_list[i2], r_list[i1]
         a = circ_circ_tangent(p1, p2, r1, r2)
         a_list.append(a)
         # ellipse(p1[0], p1[1], 2, 2)
 
-    for i1 in range(len(a_list)):
+    for i1, _ in enumerate(a_list):
         i2 = (i1 + 1) % len(a_list)
         p1, p2, r1, r2 = p_list[i1], p_list[i2], r_list[i1], r_list[i2]
         #ellipse(p1[0], p1[1], r1 * 2, r1 * 2)
@@ -31,8 +31,6 @@ def poly_arc_augmented(p_list, r_list):
             start = a1 if a1 < a2 else a1 - TWO_PI
             arc(p2[0], p2[1], r2 * 2, r2 * 2, start, a2)
         else:
-            # println((a1, a2))
-            ellipse(p1[0], p1[1], r1 * 2, r1 * 2)
             ellipse(p2[0], p2[1], r2 * 2, r2 * 2)
 
 
@@ -56,7 +54,7 @@ def circ_circ_tangent(p1, p2, r1, r2):
         line(p1[0] - x1, p1[1] - y1, p2[0] - x2, p2[1] - y2)
         return (line_angle + theta)
     else:
-        line(p1[0], p1[1], p2[0], p2[1])
+        # line(p1[0], p1[1], p2[0], p2[1])
         return None
 
 
@@ -175,4 +173,5 @@ def roundedCorner(pc, p1, p2, r):
     line(p1[0], p1[1], p1Cross[0], p1Cross[1])
     line(p2[0], p2[1], p2Cross[0], p2Cross[1])
     arc(circlePoint[0], circlePoint[1], 2 * max_r, 2 * max_r,
-        startAngle, startAngle + sweepAngle, OPEN)
+        startAngle, startAngle + sweepAngle)
+    
