@@ -3,7 +3,7 @@
 def b_poly_arc_augmented(p_list, or_list):
     r_list = or_list[:]
     a_list = []
-    
+
     for i1, p1 in enumerate(p_list):
         i2 = (i1 + 1) % len(p_list)
         p2, r2, r1 = p_list[i2], r_list[i2], r_list[i1]
@@ -19,38 +19,36 @@ def b_poly_arc_augmented(p_list, or_list):
     for i1, _ in enumerate(a_list):
         i2 = (i1 + 1) % len(a_list)
         p1, p2, r1, r2 = p_list[i1], p_list[i2], r_list[i1], r_list[i2]
-        a1, P11, P12 = a_list[i1]
-        a2, P21, P22 = a_list[i2]
+        a1, p11, p12 = a_list[i1]
+        a2, p21, p22 = a_list[i2]
         if a1 and a2:
             start = a1 if a1 < a2 else a1 - TWO_PI
             b_arc(p2[0], p2[1], r2 * 2, r2 * 2, start, a2, arc_type=2)
         else:
-            # ellipse(p2[0], p2[1], r2 * 2, r2 * 2)
+            # when the the segment is smaller than the diference between
+            # radius, circ_circ_tangent won't renturn the angle
+            # ellipse(p2[0], p2[1], r2 * 2, r2 * 2) # debug
             if a1:
-                vertex(P12[0], P12[1])
+                vertex(p12[0], p12[1])
             if a2:
-                vertex(P21[0], P21[1])
+                vertex(p21[0], p21[1])
     endShape(CLOSE)
 
 def reduce_radius(p1, p2, r1, r2):
     d = dist(p1[0], p1[1], p2[0], p2[1])
-    ri = r1 - r2
-    delta = d - abs(ri)
-    if delta > 0:
-        return(r1, r2)
-    else:
-        if r2 > r1:
-             r2 += delta * 2
+    ri = abs(r1 - r2) * 1.01 # :(
+    if d - ri < 0:
+        if r1 > r2:
+            r1 = map(d, ri, 0, r1, r2)
         else:
-             r1 += delta * 2
-        print(r1, r2, d, ri, delta)
-        return(r1, r2)
+            r2 = map(d, ri, 0, r2, r1)
+    return(r1, r2)
 
 def circ_circ_tangent(p1, p2, r1, r2):
     d = dist(p1[0], p1[1], p2[0], p2[1])
     ri = r1 - r2
     line_angle = atan2(p1[0] - p2[0], p2[1] - p1[1])
-    if d > abs(ri):
+    if d - abs(ri) > 0:
         theta = asin(ri / float(d))
         x1 = cos(line_angle - theta) * r1
         y1 = sin(line_angle - theta) * r1
@@ -65,7 +63,6 @@ def circ_circ_tangent(p1, p2, r1, r2):
                 (p1[0] - x1, p1[1] - y1),
                 (p2[0] - x2, p2[1] - y2))
     else:
-        # line(p1[0], p1[1], p2[0], p2[1])
         return (None,
                 (p1[0], p1[1]),
                 (p2[0], p2[1]))
@@ -131,9 +128,10 @@ def b_roundedCorner(pc, p2, p1, r):
     d = sqrt(segment * segment + max_r * max_r)
     circlePoint = GetProportionPoint(pc, d, L, dx, dy)
     # StartAngle and EndAngle of arc
-    startAngle = atan2(
-        p1Cross[1] - circlePoint[1], p1Cross[0] - circlePoint[0])
-    endAngle = atan2(p2Cross[1] - circlePoint[1], p2Cross[0] - circlePoint[0])
+    startAngle = atan2(p1Cross[1] - circlePoint[1],
+                       p1Cross[0] - circlePoint[0])
+    endAngle = atan2(p2Cross[1] - circlePoint[1],
+                     p2Cross[0] - circlePoint[0])
     # Sweep angle
     sweepAngle = endAngle - startAngle
     # Some additional checks
@@ -143,18 +141,18 @@ def b_roundedCorner(pc, p2, p1, r):
         A = True
         startAngle, endAngle = endAngle, startAngle
         sweepAngle = -sweepAngle
-        # ellipse(pc[0], pc[1], 15, 15)
+        # ellipse(pc[0], pc[1], 15, 15) # debug
 
     if sweepAngle > PI:
         B = True
         startAngle, endAngle = endAngle, startAngle
         sweepAngle = TWO_PI - sweepAngle
-        # ellipse(pc[0], pc[1], 25, 25)
+        # ellipse(pc[0], pc[1], 25, 25) # debug
 
     if (A and not B) or (B and not A):
         startAngle, endAngle = endAngle, startAngle
         sweepAngle = -sweepAngle
-        # ellipse(pc[0], pc[1], 5, 5)
+        # ellipse(pc[0], pc[1], 5, 5) # debug
 
     b_arc(circlePoint[0], circlePoint[1], 2 * max_r, 2 * max_r,
           startAngle, startAngle + sweepAngle, arc_type=2)
@@ -209,6 +207,7 @@ def b_arc(cx, cy, w, h, startAngle, endAngle, arc_type=0):
         px3 = cx + rx * rx3
         py3 = cy + ry * ry3
         # Debug points... comment this out!
+        # stroke(0)
         # ellipse(px3, py3, 15, 15)
         # ellipse(px0, py0, 5, 5)
 
