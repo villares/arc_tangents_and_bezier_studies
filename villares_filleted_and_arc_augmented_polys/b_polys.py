@@ -10,7 +10,7 @@ def b_poly_arc_augmented(op_list, or_list):
         p2, r2, r1 = op_list[i2], or_list[i2], or_list[i1]
         if dist(p1[0], p1[1], p2[0], p2[1]) > 1: # or p1 != p2:
             p_list.append(p1)
-            r_list.append(min(r1, r2))
+            r_list.append(r1)
     # reduce radius that won't fit
     for i1, p1 in enumerate(p_list):
         i2 = (i1 + 1) % len(p_list)
