@@ -3,7 +3,7 @@
 from polys import poly, poly_filleted, poly_arc_augmented
 from b_polys import b_poly_filleted, b_poly_arc_augmented
 
-p_list = [(100, 100), (400, 200), (300, 400), (100, 300)]
+pts_list = [(100, 300), (400, 200), (300, 400), (100, 300)]
 rad_list = [40, 80, 20, 50] 
 
 def setup():
@@ -15,20 +15,20 @@ def draw():
     background(240)
     stroke(255)
     noFill()
-    poly(p_list)
+    poly(pts_list)
     stroke(0, 0, 0)
     noFill()
     if not keyPressed:
         fill(0, 200, 0, 100) 
-        b_poly_arc_augmented(p_list, rad_list)
+        b_poly_arc_augmented(pts_list, rad_list)
         fill(0, 0, 200, 100)
-        b_poly_filleted(p_list, rad_list)
+        b_poly_filleted(pts_list, rad_list)
     elif key == " ":
-        poly_arc_augmented(p_list, rad_list)
-        poly_filleted(p_list, rad_list)
+        poly_arc_augmented(pts_list, rad_list)
+        poly_filleted(pts_list, rad_list)
     elif key == "s":
         saveFrame("test.png")
              
     if mousePressed:
-        p_list[0] = (mouseX, mouseY)
+        pts_list[0] = (mouseX, mouseY)
     

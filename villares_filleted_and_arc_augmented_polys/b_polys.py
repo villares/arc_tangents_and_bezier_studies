@@ -4,13 +4,15 @@ def b_poly_arc_augmented(op_list, or_list):
     assert len(op_list) == len(or_list), \
         "Number of points and radii not the same"
     # remove overlapping adjacent points
-    p_list, r_list = [], []
+    p_list, r_list, r2_list = [], [], or_list[:]
     for i1, p1 in enumerate(op_list):
         i2 = (i1 + 1) % len(op_list)
-        p2, r2, r1 = op_list[i2], or_list[i2], or_list[i1]
+        p2, r2, r1 = op_list[i2], r2_list[i2], r2_list[i1]
         if dist(p1[0], p1[1], p2[0], p2[1]) > 1: # or p1 != p2:
             p_list.append(p1)
             r_list.append(r1)
+        else:
+            r2_list[i2] = min(r1, r2) 
     # reduce radius that won't fit
     for i1, p1 in enumerate(p_list):
         i2 = (i1 + 1) % len(p_list)
@@ -59,15 +61,10 @@ def circ_circ_tangent(p1, p2, r1, r2):
     line_angle = atan2(p1[0] - p2[0], p2[1] - p1[1])
     if d - abs(ri) > 0:
         theta = asin(ri / float(d))
-        x1 = cos(line_angle - theta) * r1
-        y1 = sin(line_angle - theta) * r1
-        x2 = cos(line_angle - theta) * r2
-        y2 = sin(line_angle - theta) * r2
         x1 = -cos(line_angle + theta) * r1
         y1 = -sin(line_angle + theta) * r1
         x2 = -cos(line_angle + theta) * r2
         y2 = -sin(line_angle + theta) * r2
-        # line(p1[0] - x1, p1[1] - y1, p2[0] - x2, p2[1] - y2)
         return (line_angle + theta,
                 (p1[0] - x1, p1[1] - y1),
                 (p2[0] - x2, p2[1] - y2))
@@ -76,32 +73,24 @@ def circ_circ_tangent(p1, p2, r1, r2):
                 (p1[0], p1[1]),
                 (p2[0], p2[1]))
 
-def b_poly_filleted(op_list, or_list=None, open_poly=False):
+def b_poly_filleted(p_list, r_list=None, open_poly=False):
     """
     draws a 'filleted' polygon with variable radius
     dependent on roundedCorner()
     """
-    if not or_list:
-        or_list = [0] * len(op_list)
-    assert len(op_list) == len(or_list), \
+    if not r_list:
+        r_list = [0] * len(p_list)
+    assert len(p_list) == len(r_list), \
         "Number of points and radii not the same"
-    # remove overlapping adjacent points
-    p_list, r_list = [], []
-    for i1, p1 in enumerate(op_list):
-        i2 = (i1 + 1) % len(op_list)
-        p2, r1 = op_list[i2], or_list[i1]
-        if dist(p1[0], p1[1], p2[0], p2[1]) > 1: # or p1 != p2:
-            p_list.append(p1)
-            r_list.append(r1)            
-    # draw
+    strokeJoin(ROUND)
     beginShape()
     for p0, p1, p2, r in zip(p_list,
                              [p_list[-1]] + p_list[:-1],
                              [p_list[-2]] + [p_list[-1]] + p_list[:-2],
                              [r_list[-1]] + r_list[:-1]
                              ):
-        m1 = (PVector(p0[0], p0[1]) + PVector(p1[0], p1[1])) / 2
-        m2 = (PVector(p2[0], p2[1]) + PVector(p1[0], p1[1])) / 2
+        m1 = (p0[0] + p1[0]) / 2, (p0[1] + p1[1]) / 2
+        m2 = (p2[0] + p1[0]) / 2, (p2[1] + p1[1]) / 2
         b_roundedCorner(p1, m1, m2, r)
     endShape(CLOSE)
 
@@ -155,26 +144,23 @@ def b_roundedCorner(pc, p2, p1, r):
     sweepAngle = endAngle - startAngle
     # Some additional checks
     A, B = False, False
-
     if sweepAngle < 0:
         A = True
         startAngle, endAngle = endAngle, startAngle
         sweepAngle = -sweepAngle
         # ellipse(pc[0], pc[1], 15, 15) # debug
-
     if sweepAngle > PI:
         B = True
         startAngle, endAngle = endAngle, startAngle
         sweepAngle = TWO_PI - sweepAngle
         # ellipse(pc[0], pc[1], 25, 25) # debug
-
     if (A and not B) or (B and not A):
         startAngle, endAngle = endAngle, startAngle
         sweepAngle = -sweepAngle
         # ellipse(pc[0], pc[1], 5, 5) # debug
-
     b_arc(circlePoint[0], circlePoint[1], 2 * max_r, 2 * max_r,
           startAngle, startAngle + sweepAngle, arc_type=2)
+
 
 def b_arc(cx, cy, w, h, startAngle, endAngle, arc_type=0):
     """
@@ -186,9 +172,8 @@ def b_arc(cx, cy, w, h, startAngle, endAngle, arc_type=0):
                  for use inside a larger PShape
     """
     theta = endAngle - startAngle
-
+    # Compute raw Bezier coordinates.
     if arc_type != 1 or theta < HALF_PI:
-        # Compute raw Bezier coordinates.
         x0 = cos(theta / 2.0)
         y0 = sin(theta / 2.0)
         x3 = x0
@@ -214,7 +199,6 @@ def b_arc(cx, cy, w, h, startAngle, endAngle, arc_type=0):
         ry2 = sBezAng * x2 + cBezAng * y2
         rx3 = cBezAng * x3 - sBezAng * y3
         ry3 = sBezAng * x3 + cBezAng * y3
-
         # Compute scaled and translated Bezier coordinates.
         rx, ry = w / 2.0, h / 2.0
         px0 = cx + rx * rx0
@@ -229,16 +213,16 @@ def b_arc(cx, cy, w, h, startAngle, endAngle, arc_type=0):
         # stroke(0)
         # ellipse(px3, py3, 15, 15)
         # ellipse(px0, py0, 5, 5)
-
     # Drawing
-    if arc_type == 0:
+    if arc_type == 0: # 'normal' arc (not 'middle' nor 'naked')
         beginShape()
-    if arc_type != 1:
+    if arc_type != 1: # if not 'middle'
         vertex(px3, py3)
     if theta < HALF_PI:
         bezierVertex(px2, py2, px1, py1, px0, py0)
     else:
+        # to avoid distortion, break into 2 smaller arcs
         b_arc(cx, cy, w, h, startAngle, endAngle - theta / 2.0, arc_type=1)
         b_arc(cx, cy, w, h, startAngle + theta / 2.0, endAngle, arc_type=1)
-    if arc_type == 0:
+    if arc_type == 0: # end of a 'normal' arc
         endShape()
