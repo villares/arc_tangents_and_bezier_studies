@@ -2,6 +2,8 @@
 
 from polys import poly, poly_filleted, poly_arc_augmented
 from b_polys import b_poly_filleted, b_poly_arc_augmented
+from c_polys import c_poly_filleted, c_poly_arc_augmented
+
 
 pts_list = [(100, 300), (400, 200), (300, 400), (100, 300)]
 rad_list = [40, 80, 20, 50] 
@@ -26,7 +28,7 @@ def draw():
     elif key == " ":
         poly_arc_augmented(pts_list, rad_list)
         poly_filleted(pts_list, rad_list)
-    elif key == "s":
+    elif mousePressed: # key + mousePressed
         saveFrame("test.png")
              
     if mousePressed:
