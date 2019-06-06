@@ -16,7 +16,7 @@ def poly_arc_augmented(p_list, r_list):
     a_list = []
     for i1, p1 in enumerate(p_list):
         i2 = (i1 + 1) % len(p_list)
-        p2, r2, r1 =  p_list[i2], r_list[i2], r_list[i1]
+        p2, r2, r1 = p_list[i2], r_list[i2], r_list[i1]
         a = circ_circ_tangent(p1, p2, r1, r2)
         a_list.append(a)
         # ellipse(p1[0], p1[1], 2, 2)
@@ -46,7 +46,7 @@ def circ_circ_tangent(p1, p2, r1, r2):
         # x2 = cos(line_angle - theta) * r2
         # y2 = sin(line_angle - theta) * r2
         # line(p1[0] - x1, p1[1] - y1, p2[0] - x2, p2[1] - y2)
-    
+
         x1 = -cos(line_angle + theta) * r1
         y1 = -sin(line_angle + theta) * r1
         x2 = -cos(line_angle + theta) * r2
@@ -54,7 +54,7 @@ def circ_circ_tangent(p1, p2, r1, r2):
         line(p1[0] - x1, p1[1] - y1, p2[0] - x2, p2[1] - y2)
         return line_angle + theta
     else:
-    #     # line(p1[0], p1[1], p2[0], p2[1])
+    # line(p1[0], p1[1], p2[0], p2[1])
         return None
 
 
@@ -146,9 +146,10 @@ def roundedCorner(pc, p1, p2, r):
     circlePoint = GetProportionPoint(pc, d, L, dx, dy)
 
     # Start_angle and End_angle of arc
-    start_angle = atan2(p1Cross[1] - circlePoint[1], p1Cross[0] - circlePoint[0])
-    end_angle = atan2(p2Cross[1] - circlePoint[1], p2Cross[0] - circlePoint[0])
-
+    start_angle = atan2(p1Cross[1] - circlePoint[1],
+                        p1Cross[0] - circlePoint[0])
+    end_angle = atan2(p2Cross[1] - circlePoint[1],
+                      p2Cross[0] - circlePoint[0])
     # Sweep angle
     sweep_angle = end_angle - start_angle
 
@@ -172,6 +173,6 @@ def roundedCorner(pc, p1, p2, r):
 
     line(p1[0], p1[1], p1Cross[0], p1Cross[1])
     line(p2[0], p2[1], p2Cross[0], p2Cross[1])
-    arc(circlePoint[0], circlePoint[1], 2 * max_r, 2 * max_r,
+    arc(circlePoint[0], circlePoint[1],
+        2 * max_r, 2 * max_r,
         start_angle, start_angle + sweep_angle)
-    

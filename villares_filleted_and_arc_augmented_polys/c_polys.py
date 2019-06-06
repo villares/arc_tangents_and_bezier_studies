@@ -91,10 +91,10 @@ def c_poly_filleted(p_list, r_list=None, open_poly=False):
                              ):
         m1 = (p0[0] + p1[0]) / 2, (p0[1] + p1[1]) / 2
         m2 = (p2[0] + p1[0]) / 2, (p2[1] + p1[1]) / 2
-        b_roundedCorner(p1, m1, m2, r)
+        c_roundedCorner(p1, m1, m2, r)
     endShape(CLOSE)
 
-def b_roundedCorner(pc, p2, p1, r):
+def c_roundedCorner(pc, p2, p1, r):
     """
     Based on Stackoverflow C# rounded corner post 
     https://stackoverflow.com/questions/24771828/algorithm-for-creating-rounded-corners-in-a-polygon
