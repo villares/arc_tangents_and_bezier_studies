@@ -1,3 +1,5 @@
+// From: http://bazaar.launchpad.net/~philho/+junk/Processing/view/head:/_QuickExperiments/_Static/CircleWithCorner/CircleWithCorner.pde
+
 // [url=http://processing.org/discourse/yabb2/YaBB.pl?num=1272553052/2]How to do this shape ?[/url]
 // [url=http://processing.org/discourse/yabb2/YaBB.pl?num=1274367486/0#2]shape arc form[/url]
 
