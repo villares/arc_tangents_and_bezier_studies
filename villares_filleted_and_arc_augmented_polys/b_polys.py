@@ -34,7 +34,7 @@ def b_poly_arc_augmented(op_list, or_list):
         a2, p21, p22 = a_list[i2]
         if a1 and a2:
             start = a1 if a1 < a2 else a1 - TWO_PI
-            b_arc(p2[0], p2[1], r2 * 2, r2 * 2, start, a2, arc_type=2)
+            b_arc(p2[0], p2[1], r2 * 2, r2 * 2, start, a2, mode=2)
         else:
             # when the the segment is smaller than the diference between
             # radius, circ_circ_tangent won't renturn the angle
@@ -109,7 +109,7 @@ def b_roundedCorner(pc, p2, p1, r):
     # Vector 2
     dx2 = pc[0] - p2[0]
     dy2 = pc[1] - p2[1]
-    # Angle between vector 1 and vector 2 divided by 2
+    # _angle between vector 1 and vector 2 divided by 2
     angle = (atan2(dy1, dx1) - atan2(dy2, dx2)) / 2
     # The length of segment between angular point and the
     # points of intersection with the circle of a given radius
@@ -135,45 +135,45 @@ def b_roundedCorner(pc, p2, p1, r):
     L = sqrt(dx * dx + dy * dy)
     d = sqrt(segment * segment + max_r * max_r)
     circlePoint = GetProportionPoint(pc, d, L, dx, dy)
-    # StartAngle and EndAngle of arc
-    startAngle = atan2(p1Cross[1] - circlePoint[1],
+    # Start_angle and End_angle of arc
+    start_angle = atan2(p1Cross[1] - circlePoint[1],
                        p1Cross[0] - circlePoint[0])
-    endAngle = atan2(p2Cross[1] - circlePoint[1],
+    end_angle = atan2(p2Cross[1] - circlePoint[1],
                      p2Cross[0] - circlePoint[0])
     # Sweep angle
-    sweepAngle = endAngle - startAngle
+    sweep_angle = end_angle - start_angle
     # Some additional checks
     A, B = False, False
-    if sweepAngle < 0:
+    if sweep_angle < 0:
         A = True
-        startAngle, endAngle = endAngle, startAngle
-        sweepAngle = -sweepAngle
+        start_angle, end_angle = end_angle, start_angle
+        sweep_angle = -sweep_angle
         # ellipse(pc[0], pc[1], 15, 15) # debug
-    if sweepAngle > PI:
+    if sweep_angle > PI:
         B = True
-        startAngle, endAngle = endAngle, startAngle
-        sweepAngle = TWO_PI - sweepAngle
+        start_angle, end_angle = end_angle, start_angle
+        sweep_angle = TWO_PI - sweep_angle
         # ellipse(pc[0], pc[1], 25, 25) # debug
     if (A and not B) or (B and not A):
-        startAngle, endAngle = endAngle, startAngle
-        sweepAngle = -sweepAngle
+        start_angle, end_angle = end_angle, start_angle
+        sweep_angle = -sweep_angle
         # ellipse(pc[0], pc[1], 5, 5) # debug
     b_arc(circlePoint[0], circlePoint[1], 2 * max_r, 2 * max_r,
-          startAngle, startAngle + sweepAngle, arc_type=2)
+          start_angle, start_angle + sweep_angle, mode=2)
 
 
-def b_arc(cx, cy, w, h, startAngle, endAngle, arc_type=0):
+def b_arc(cx, cy, w, h, start_angle, end_angle, mode=0):
     """
     A bezier approximation of an arc
     using the same signature as the original Processing arc()
-    arc_type: 0 "normal" arc, using beginShape() and endShape()
+    mode: 0 "normal" arc, using beginShape() and endShape()
               1 "middle" used in recursive call of smaller arcs
               2 "naked" like normal, but without beginShape() and endShape()
                  for use inside a larger PShape
     """
-    theta = endAngle - startAngle
+    theta = end_angle - start_angle
     # Compute raw Bezier coordinates.
-    if arc_type != 1 or theta < HALF_PI:
+    if mode != 1 or theta < HALF_PI:
         x0 = cos(theta / 2.0)
         y0 = sin(theta / 2.0)
         x3 = x0
@@ -188,7 +188,7 @@ def b_arc(cx, cy, w, h, startAngle, endAngle, arc_type=0):
         # Compute rotationally-offset Bezier coordinates, using:
         # x' = cos(angle) * x - sin(angle) * y
         # y' = sin(angle) * x + cos(angle) * y
-        bezAng = startAngle + theta / 2.0
+        bezAng = start_angle + theta / 2.0
         cBezAng = cos(bezAng)
         sBezAng = sin(bezAng)
         rx0 = cBezAng * x0 - sBezAng * y0
@@ -214,15 +214,15 @@ def b_arc(cx, cy, w, h, startAngle, endAngle, arc_type=0):
         # ellipse(px3, py3, 15, 15)
         # ellipse(px0, py0, 5, 5)
     # Drawing
-    if arc_type == 0: # 'normal' arc (not 'middle' nor 'naked')
+    if mode == 0: # 'normal' arc (not 'middle' nor 'naked')
         beginShape()
-    if arc_type != 1: # if not 'middle'
+    if mode != 1: # if not 'middle'
         vertex(px3, py3)
     if theta < HALF_PI:
         bezierVertex(px2, py2, px1, py1, px0, py0)
     else:
         # to avoid distortion, break into 2 smaller arcs
-        b_arc(cx, cy, w, h, startAngle, endAngle - theta / 2.0, arc_type=1)
-        b_arc(cx, cy, w, h, startAngle + theta / 2.0, endAngle, arc_type=1)
-    if arc_type == 0: # end of a 'normal' arc
+        b_arc(cx, cy, w, h, start_angle, end_angle - theta / 2.0, mode=1)
+        b_arc(cx, cy, w, h, start_angle + theta / 2.0, end_angle, mode=1)
+    if mode == 0: # end of a 'normal' arc
         endShape()

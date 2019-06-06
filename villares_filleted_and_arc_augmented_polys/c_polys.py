@@ -34,7 +34,7 @@ def c_poly_arc_augmented(op_list, or_list):
         a2, p21, p22 = a_list[i2]
         if a1 and a2:
             start = a1 if a1 < a2 else a1 - TWO_PI
-            c_arc(p2[0], p2[1], r2 * 2, r2 * 2, start, a2, arc_type=2)
+            c_arc(p2[0], p2[1], r2 * 2, r2 * 2, start, a2, mode=2)
         else:
             # when the the segment is smaller than the diference between
             # radius, circ_circ_tangent won't renturn the angle
@@ -109,7 +109,7 @@ def b_roundedCorner(pc, p2, p1, r):
     # Vector 2
     dx2 = pc[0] - p2[0]
     dy2 = pc[1] - p2[1]
-    # Angle between vector 1 and vector 2 divided by 2
+    # _angle between vector 1 and vector 2 divided by 2
     angle = (atan2(dy1, dx1) - atan2(dy2, dx2)) / 2
     # The length of segment between angular point and the
     # points of intersection with the circle of a given radius
@@ -135,68 +135,68 @@ def b_roundedCorner(pc, p2, p1, r):
     L = sqrt(dx * dx + dy * dy)
     d = sqrt(segment * segment + max_r * max_r)
     circlePoint = GetProportionPoint(pc, d, L, dx, dy)
-    # StartAngle and EndAngle of arc
-    startAngle = atan2(p1Cross[1] - circlePoint[1],
+    # Start_angle and End_angle of arc
+    start_angle = atan2(p1Cross[1] - circlePoint[1],
                        p1Cross[0] - circlePoint[0])
-    endAngle = atan2(p2Cross[1] - circlePoint[1],
+    end_angle = atan2(p2Cross[1] - circlePoint[1],
                      p2Cross[0] - circlePoint[0])
     # Sweep angle
-    sweepAngle = endAngle - startAngle
+    sweep_angle = end_angle - start_angle
     # Some additional checks
     A, B = False, False
-    if sweepAngle < 0:
+    if sweep_angle < 0:
         A = True
-        startAngle, endAngle = endAngle, startAngle
-        sweepAngle = -sweepAngle
+        start_angle, end_angle = end_angle, start_angle
+        sweep_angle = -sweep_angle
         # ellipse(pc[0], pc[1], 15, 15) # debug
-    if sweepAngle > PI:
+    if sweep_angle > PI:
         B = True
-        startAngle, endAngle = endAngle, startAngle
-        sweepAngle = TWO_PI - sweepAngle
+        start_angle, end_angle = end_angle, start_angle
+        sweep_angle = TWO_PI - sweep_angle
         # ellipse(pc[0], pc[1], 25, 25) # debug
     if (A and not B) or (B and not A):
-        startAngle, endAngle = endAngle, startAngle
-        sweepAngle = -sweepAngle
+        start_angle, end_angle = end_angle, start_angle
+        sweep_angle = -sweep_angle
         # ellipse(pc[0], pc[1], 5, 5) # debug
     c_arc(circlePoint[0], circlePoint[1], 2 * max_r, 2 * max_r,
-          startAngle, startAngle + sweepAngle, arc_type=2)
+          start_angle, start_angle + sweep_angle, mode=2)
 
 
-def c_arc(cx, cy, w, h, startAngle, endAngle, arc_type=0, num_points=None):
+def c_arc(cx, cy, w, h, start_angle, end_angle, mode=0, num_points=None):
     """
     A poly approximation of an arc
     using the same signature as the original Processing arc()
-    arc_type: 0 "normal" arc, using beginShape() and endShape()
+    mode: 0 "normal" arc, using beginShape() and endShape()
               2 "naked" like normal, but without beginShape() and endShape()
                  for use inside a larger PShape
     """
     if not num_points:
         num_points = 24
-    # startAngle = startAngle if startAngle < endAngle else startAngle - TWO_PI
-    sweepAngle = endAngle - startAngle  
-    if arc_type == 0:
+    # start_angle = start_angle if start_angle < end_angle else start_angle - TWO_PI
+    sweep_angle = end_angle - start_angle  
+    if mode == 0:
             beginShape()
-    if sweepAngle < 0:
-        startAngle, endAngle = endAngle, startAngle
-        sweepAngle = -sweepAngle 
-        angle = sweepAngle / int(num_points)
-        a = endAngle
-        while a >= startAngle:
+    if sweep_angle < 0:
+        start_angle, end_angle = end_angle, start_angle
+        sweep_angle = -sweep_angle 
+        angle = sweep_angle / int(num_points)
+        a = end_angle
+        while a >= start_angle:
                 sx = cx + cos(a) * w / 2.
                 sy = cy + sin(a) * h / 2.
                 vertex(sx, sy)
                 a -= angle   
-    elif sweepAngle > 0:
-        angle = sweepAngle / int(num_points)
-        a = startAngle
-        while a <= endAngle:
+    elif sweep_angle > 0:
+        angle = sweep_angle / int(num_points)
+        a = start_angle
+        while a <= end_angle:
                 sx = cx + cos(a) * w / 2.
                 sy = cy + sin(a) * h / 2.
                 vertex(sx, sy)
                 a += angle
     else:
-        sx = cx + cos(startAngle) * w / 2.
-        sy = cy + sin(startAngle) * h / 2.
+        sx = cx + cos(start_angle) * w / 2.
+        sy = cy + sin(start_angle) * h / 2.
         vertex(sx, sy)
-    if arc_type == 0:
+    if mode == 0:
         endShape()

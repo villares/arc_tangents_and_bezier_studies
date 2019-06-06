@@ -110,7 +110,7 @@ def roundedCorner(pc, p1, p2, r):
     dx2 = pc[0] - p2[0]
     dy2 = pc[1] - p2[1]
 
-    # Angle between vector 1 and vector 2 divided by 2
+    # _angle between vector 1 and vector 2 divided by 2
     angle = (atan2(dy1, dx1) - atan2(dy2, dx2)) / 2
 
     # The length of segment between angular point and the
@@ -145,21 +145,21 @@ def roundedCorner(pc, p1, p2, r):
 
     circlePoint = GetProportionPoint(pc, d, L, dx, dy)
 
-    # StartAngle and EndAngle of arc
-    startAngle = atan2(p1Cross[1] - circlePoint[1], p1Cross[0] - circlePoint[0])
-    endAngle = atan2(p2Cross[1] - circlePoint[1], p2Cross[0] - circlePoint[0])
+    # Start_angle and End_angle of arc
+    start_angle = atan2(p1Cross[1] - circlePoint[1], p1Cross[0] - circlePoint[0])
+    end_angle = atan2(p2Cross[1] - circlePoint[1], p2Cross[0] - circlePoint[0])
 
     # Sweep angle
-    sweepAngle = endAngle - startAngle
+    sweep_angle = end_angle - start_angle
 
     # Some additional checks
-    if sweepAngle < 0:
-        startAngle, endAngle = endAngle, startAngle
-        sweepAngle = -sweepAngle
+    if sweep_angle < 0:
+        start_angle, end_angle = end_angle, start_angle
+        sweep_angle = -sweep_angle
 
-    if sweepAngle > PI:
-        startAngle, endAngle = endAngle, startAngle
-        sweepAngle = TWO_PI - sweepAngle
+    if sweep_angle > PI:
+        start_angle, end_angle = end_angle, start_angle
+        sweep_angle = TWO_PI - sweep_angle
 
     with pushStyle():
         noStroke()
@@ -173,5 +173,5 @@ def roundedCorner(pc, p1, p2, r):
     line(p1[0], p1[1], p1Cross[0], p1Cross[1])
     line(p2[0], p2[1], p2Cross[0], p2Cross[1])
     arc(circlePoint[0], circlePoint[1], 2 * max_r, 2 * max_r,
-        startAngle, startAngle + sweepAngle)
+        start_angle, start_angle + sweep_angle)
     
