@@ -32,7 +32,7 @@ def b_poly_arc_augmented(op_list, or_list):
         p1, p2, r1, r2 = p_list[i1], p_list[i2], r_list[i1], r_list[i2]
         a1, p11, p12 = a_list[i1]
         a2, p21, p22 = a_list[i2]
-        if a1 and a2:
+        if a1 != None and a2 != None :
             start = a1 if a1 < a2 else a1 - TWO_PI
             if r2 < 0:
                 a2 = a2 - TWO_PI
@@ -41,9 +41,9 @@ def b_poly_arc_augmented(op_list, or_list):
             # when the the segment is smaller than the diference between
             # radius, circ_circ_tangent won't renturn the angle
             # ellipse(p2[0], p2[1], r2 * 2, r2 * 2) # debug
-            if a1:
+            if a1 != None:
                 vertex(p12[0], p12[1])
-            if a2:
+            if a2 != None:
                 vertex(p21[0], p21[1])
     endShape(CLOSE)
 
