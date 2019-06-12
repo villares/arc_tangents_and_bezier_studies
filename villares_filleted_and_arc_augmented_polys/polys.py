@@ -27,7 +27,7 @@ def poly_arc_augmented(p_list, r_list):
         #ellipse(p1[0], p1[1], r1 * 2, r1 * 2)
         a1 = a_list[i1]
         a2 = a_list[i2]
-        if a1 and a2:
+        if a1 != None and a2 != None :
             start = a1 if a1 < a2 else a1 - TWO_PI
             arc(p2[0], p2[1], r2 * 2, r2 * 2, start, a2)
         else:
