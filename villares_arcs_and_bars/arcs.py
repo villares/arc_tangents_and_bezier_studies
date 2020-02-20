@@ -35,16 +35,15 @@ def b_circle_arc(x, y, radius, start_ang, sweep_ang, mode=0):
 
 def b_arc(cx, cy, w, h, start_angle, end_angle, mode=0):
     """
-    A bezier approximation of an arc
-    using the same signature as the original Processing arc()
-    mode: 0 "normal" arc, using beginShape() and endShape()
-              1 "middle" used in recursive call of smaller arcs
-              2 "naked" like normal, but without beginShape() and endShape()
-                 for use inside a larger PShape
+    A bezier approximation of an arc using the same signature as the original Processing arc()
+    mode: 0 "normal" or standalone arc, using beginShape() and endShape()
+          1 "middle" used in recursive call of smaller arcs
+          2 "naked" like normal, but without beginShape() and endShape()
+             for use inside a larger PShape
     """
     theta = end_angle - start_angle
     # Compute raw Bezier coordinates.
-    if mode != 1 or theta < HALF_PI:
+    if mode != 1 or abs(theta) < HALF_PI:
         x0 = cos(theta / 2.0)
         y0 = sin(theta / 2.0)
         x3 = x0
@@ -89,7 +88,7 @@ def b_arc(cx, cy, w, h, start_angle, end_angle, mode=0):
         beginShape()
     if mode != 1: # if not 'middle'
         vertex(px3, py3)
-    if theta < HALF_PI:
+    if abs(theta) < HALF_PI:
         bezierVertex(px2, py2, px1, py1, px0, py0)
     else:
         # to avoid distortion, break into 2 smaller arcs
