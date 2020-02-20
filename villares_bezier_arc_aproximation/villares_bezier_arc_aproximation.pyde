@@ -32,16 +32,16 @@ def draw():
     b_arc(cx, cy, radius * 2, radius * 2, startAngle, endAngle)
 
 
-def b_arc(cx, cy, w, h, startAngle, endAngle, mode=0):
+def b_arc(cx, cy, w, h, start_angle, end_angle, mode=0):
     """
     A bezier approximation of an arc
     using the same signature as the original Processing arc()
-    mode: 0 "normal" arc, using beginShape() and endShape()
+    mode: 0 "normal" or stand-alone arc, using beginShape() and endShape()
           1 "middle" used in recursive call of smaller arcs
           2 "naked" like normal, but without beginShape() and endShape()
-            for use inside a larger PShape
+             for use inside a larger PShape
     """
-    theta = endAngle - startAngle
+    theta = end_angle - start_angle
     # Compute raw Bezier coordinates.
     if mode != 1 or theta < HALF_PI:
         x0 = cos(theta / 2.0)
@@ -58,7 +58,7 @@ def b_arc(cx, cy, w, h, startAngle, endAngle, mode=0):
         # Compute rotationally-offset Bezier coordinates, using:
         # x' = cos(angle) * x - sin(angle) * y
         # y' = sin(angle) * x + cos(angle) * y
-        bezAng = startAngle + theta / 2.0
+        bezAng = start_angle + theta / 2.0
         cBezAng = cos(bezAng)
         sBezAng = sin(bezAng)
         rx0 = cBezAng * x0 - sBezAng * y0
@@ -80,19 +80,20 @@ def b_arc(cx, cy, w, h, startAngle, endAngle, mode=0):
         px3 = cx + rx * rx3
         py3 = cy + ry * ry3
         # Debug points... comment this out!
-        ellipse(px3, py3, 15, 15)
-        ellipse(px0, py0, 5, 5)
+        # stroke(0)
+        # ellipse(px3, py3, 15, 15)
+        # ellipse(px0, py0, 5, 5)
     # Drawing
     if mode == 0: # 'normal' arc (not 'middle' nor 'naked')
         beginShape()
     if mode != 1: # if not 'middle'
         vertex(px3, py3)
-    if theta < HALF_PI:
+    if abs(theta) < HALF_PI:
         bezierVertex(px2, py2, px1, py1, px0, py0)
     else:
         # to avoid distortion, break into 2 smaller arcs
-        b_arc(cx, cy, w, h, startAngle, endAngle - theta / 2.0, mode=1)
-        b_arc(cx, cy, w, h, startAngle + theta / 2.0, endAngle, mode=1)
+        b_arc(cx, cy, w, h, start_angle, end_angle - theta / 2.0, mode=1)
+        b_arc(cx, cy, w, h, start_angle + theta / 2.0, end_angle, mode=1)
     if mode == 0: # end of a 'normal' arc
         endShape()
         
