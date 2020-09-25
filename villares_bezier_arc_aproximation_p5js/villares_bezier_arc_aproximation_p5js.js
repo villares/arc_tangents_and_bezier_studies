@@ -50,7 +50,7 @@ function b_arc(cx, cy, w, h, start_angle, end_angle, mode = 0) {
   var py0 = 0;
   var theta = end_angle - start_angle;
   // Compute raw Bezier coordinates.
-  if (mode != 1 || theta < HALF_PI) {
+  if (mode != 1 || abs(theta) < HALF_PI) {
     var x0 = cos(theta / 2.0);
     var y0 = sin(theta / 2.0);
     var x3 = x0;
