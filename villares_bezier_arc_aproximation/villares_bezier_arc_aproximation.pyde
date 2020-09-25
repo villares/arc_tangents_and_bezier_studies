@@ -34,25 +34,25 @@ def draw():
 
 def b_arc(cx, cy, w, h, start_angle, end_angle, mode=0):
     """
-    A bezier approximation of an arc
-    using the same signature as the original Processing arc()
-    mode: 0 "normal" or stand-alone arc, using beginShape() and endShape()
+    Draw a bezier approximation of an arc using the same
+    signature as the original Processing arc().
+    mode: 0 "normal" arc, using beginShape() and endShape()
           1 "middle" used in recursive call of smaller arcs
-          2 "naked" like normal, but without beginShape() and endShape()
-             for use inside a larger PShape
+          2 "naked" like normal, but without beginShape() and
+             endShape() for use inside a larger PShape.
     """
+    DEBUG = False  # More of a nice visual display of the arc subdivision.
+    # Based on ideas from Richard DeVeneza via code by Gola Levin:
+    # http://www.flong.com/blog/2009/bezier-approximation-of-a-circular-arc-in-processing/
     theta = end_angle - start_angle
     # Compute raw Bezier coordinates.
-    if mode != 1 or theta < HALF_PI:
+    if mode != 1 or abs(theta) < HALF_PI:
         x0 = cos(theta / 2.0)
         y0 = sin(theta / 2.0)
         x3 = x0
         y3 = 0 - y0
         x1 = (4.0 - x0) / 3.0
-        if y0 != 0:
-            y1 = ((1.0 - x0) * (3.0 - x0)) / (3.0 * y0)  # y0 != 0...
-        else:
-            y1 = 0
+        y1 = ((1.0 - x0) * (3.0 - x0)) / (3.0 * y0) if y0 != 0 else 0
         x2 = x1
         y2 = 0 - y1
         # Compute rotationally-offset Bezier coordinates, using:
@@ -79,14 +79,14 @@ def b_arc(cx, cy, w, h, start_angle, end_angle, mode=0):
         py2 = cy + ry * ry2
         px3 = cx + rx * rx3
         py3 = cy + ry * ry3
-        # Debug points... comment this out!
-        # stroke(0)
-        # ellipse(px3, py3, 15, 15)
-        # ellipse(px0, py0, 5, 5)
+        if DEBUG: 
+            stroke(0)
+            ellipse(px3, py3, 3, 3)
+            ellipse(px0, py0, 5, 5)
     # Drawing
-    if mode == 0: # 'normal' arc (not 'middle' nor 'naked')
+    if mode == 0:  # 'normal' arc (not 'middle' nor 'naked')
         beginShape()
-    if mode != 1: # if not 'middle'
+    if mode != 1:  # if not 'middle'
         vertex(px3, py3)
     if abs(theta) < HALF_PI:
         bezierVertex(px2, py2, px1, py1, px0, py0)
@@ -94,6 +94,6 @@ def b_arc(cx, cy, w, h, start_angle, end_angle, mode=0):
         # to avoid distortion, break into 2 smaller arcs
         b_arc(cx, cy, w, h, start_angle, end_angle - theta / 2.0, mode=1)
         b_arc(cx, cy, w, h, start_angle + theta / 2.0, end_angle, mode=1)
-    if mode == 0: # end of a 'normal' arc
+    if mode == 0:  # end of a 'normal' arc
         endShape()
         
