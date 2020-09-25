@@ -60,7 +60,7 @@ void b_arc(float cx, float cy,
   float py0 = 0;
   float theta = end_angle - start_angle;
   // Compute raw Bezier coordinates.
-  if (mode != 1 || theta < HALF_PI) {
+  if (mode != 1 || abs(theta) < HALF_PI) {
     float x0 = cos(theta / 2.0);
     float y0 = sin(theta / 2.0);
     float x3 = x0;
