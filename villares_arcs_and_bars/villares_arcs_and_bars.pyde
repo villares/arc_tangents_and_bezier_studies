@@ -16,7 +16,7 @@ def draw():
     var_bar(100, 50, 300, 200, 0, 30)
     var_bar(100, 150, 300, 300, 40, 10)
     line(100, 200, 300, 400)
-    bar(100, 200, 300, 400, 20, 200)
+    bar(100, 200, 300, 400, thickness=20, shorter=200)
     
     
 def bar(x1, y1, x2, y2, thickness, shorter=0):
