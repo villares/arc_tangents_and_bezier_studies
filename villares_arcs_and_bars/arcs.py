@@ -4,7 +4,8 @@ From github.com/villares/villares/arcs.py
 
 2020-09-22 Merges/renames several versions of the arc related functions
 2020-09-24 Updates arc_filleted_poly and arc_augmented_poly
-2020-09-25 Added bar and var_bar
+2020-09-25 Added bar() and var_bar()
+2020-09-26 Moved lots of code from bar() to var_bar(), and arc_func is now kwarg
 """
 from warnings import warn
 from line_geometry import is_poly_self_intersecting, triangle_area
@@ -394,31 +395,28 @@ def circ_circ_tangent(p1, p2, r1, r2):
                 (p1[0], p1[1]),
                 (p2[0], p2[1]))
 
-def bar(x1, y1, x2, y2, thickness, shorter=0, arc_func=b_arc, **kwargs):
+def bar(x1, y1, x2, y2, thickness, **kwargs):
     """
     Draw a thick strip with rounded ends.
     It can be shorter than the supporting (axial) line segment.
     
     # 2020-9-25 First rewrite attempt based on var_bar + arc_func + **kwargs
+    # 2020-9-26 Let's do everything in var_bar()!
     """
-    L = dist(x1, y1, x2, y2)
-    with pushMatrix():
-        translate(x1, y1)
-        angle = atan2(x1 - x2, y2 - y1)
-        rotate(angle)
-        offset = shorter / 2
-        var_bar(0, offset, 0, L - offset,
-                thickness / 2, thickness / 2,
-                arc_func=arc_func, **kwargs)
+    var_bar(x1, y1, x2, y2, thickness / 2, **kwargs)
 
 def var_bar(p1x, p1y, p2x, p2y, r1, r2=None, **kwargs):
     """
     Tangent/tangent shape on 2 circles of arbitrary radius
 
-    # 2020-9-25 Added arc_func and **kwargs for use with p_arc num_points=N argument.   
-    """
+    # 2020-9-25 Added **kwargs, now one can use arc_func=p_arc & num_points=N   
+    # 2020-9-26 Added treatment to shorter=N so as to incorporate bar() uses.
+;    """
     r2 = r2 if r2 is not None else r1
-    arc_func = kwargs.pop('arc_func', None) or b_arc
+    arc_func = kwargs.pop('arc_func', b_arc)
+    shorter = kwargs.pop('shorter', 0) 
+    if shorter and r1 != r2: 
+        raise ValueError, "can't draw shorter var_bar with different radii" 
 
     d = dist(p1x, p1y, p2x, p2y)
     ri = r1 - r2
@@ -428,6 +426,7 @@ def var_bar(p1x, p1y, p2x, p2y, r1, r2=None, **kwargs):
             rid = 1
         if rid < -1:
             rid = -1
+        offset = shorter / 2.0 if shorter < d else d / 2.0 
         beta = asin(rid) + HALF_PI
         with pushMatrix():
             translate(p1x, p1y)
@@ -439,9 +438,9 @@ def var_bar(p1x, p1y, p2x, p2y, r1, r2=None, **kwargs):
             y2 = sin(beta) * r2
             #print((d, beta, ri, x1, y1, x2, y2))
             beginShape()  
-            arc_func(0, 0, r1 * 2, r1 * 2,
+            arc_func(offset, 0, r1 * 2, r1 * 2,
                 -beta - PI, beta - PI, mode=2, **kwargs)
-            arc_func(d, 0, r2 * 2, r2 * 2,
+            arc_func(d - offset, 0, r2 * 2, r2 * 2,
                 beta - PI, PI - beta, mode=2, **kwargs)
             endShape(CLOSE)
     else:
