@@ -5,7 +5,7 @@ From github.com/villares/villares/arcs.py
 2020-09-22 Merges/renames several versions of the arc related functions
 2020-09-24 Updates arc_filleted_poly and arc_augmented_poly
 2020-09-25 Added bar() and var_bar()
-2020-09-26 Moved lots of code from bar() to var_bar(), and arc_func is now kwarg
+2020-09-26 Moved code from bar() to var_bar() & arc_func is now kwarg
 """
 from warnings import warn
 from line_geometry import is_poly_self_intersecting, triangle_area
@@ -444,5 +444,5 @@ def var_bar(p1x, p1y, p2x, p2y, r1, r2=None, **kwargs):
                 beta - PI, PI - beta, mode=2, **kwargs)
             endShape(CLOSE)
     else:
-        ellipse(p1x, p1y, r1 * 2, r1 * 2)
-        ellipse(p2x, p2y, r2 * 2, r2 * 2)
+        arc_func(p1x, p1y, r1 * 2, r1 * 2, 0, TWO_PI, **kwargs)
+        arc_func(p2x, p2y, r2 * 2, r2 * 2, 0, TWO_PI, **kwargs)
