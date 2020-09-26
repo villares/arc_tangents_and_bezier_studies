@@ -399,7 +399,7 @@ def bar(x1, y1, x2, y2, thickness, **kwargs):
     """
     Draw a thick strip with rounded ends.
     It can be shorter than the supporting (axial) line segment.
-    
+
     # 2020-9-25 First rewrite attempt based on var_bar + arc_func + **kwargs
     # 2020-9-26 Let's do everything in var_bar()!
     """
@@ -410,39 +410,38 @@ def var_bar(p1x, p1y, p2x, p2y, r1, r2=None, **kwargs):
     Tangent/tangent shape on 2 circles of arbitrary radius
 
     # 2020-9-25 Added **kwargs, now one can use arc_func=p_arc & num_points=N   
-    # 2020-9-26 Added treatment to shorter=N so as to incorporate bar() uses.
-;    """
+    # 2020-9-26 Added treatment to shorter=N so as to incorporate bar() use.
+                Added a keyword argument, internal=True is the default,
+                internal=False disables drawing internal circles (d < max + r2).
+                Minor cleanups, and removed "with" for pushMatrix().
+    """
     r2 = r2 if r2 is not None else r1
+    draw_internal_circles = kwargs.pop('internal', True)
     arc_func = kwargs.pop('arc_func', b_arc)
-    shorter = kwargs.pop('shorter', 0) 
-    if shorter and r1 != r2: 
-        raise ValueError, "can't draw shorter var_bar with different radii" 
-
+    shorter = kwargs.pop('shorter', 0)
+    if shorter and r1 != r2:
+        raise ValueError, "can't draw shorter var_bar with different radii"
     d = dist(p1x, p1y, p2x, p2y)
     ri = r1 - r2
     if d > abs(ri):
-        rid = (r1 - r2) / d
-        if rid > 1:
-            rid = 1
-        if rid < -1:
-            rid = -1
-        offset = shorter / 2.0 if shorter < d else d / 2.0 
-        beta = asin(rid) + HALF_PI
-        with pushMatrix():
-            translate(p1x, p1y)
-            angle = atan2(p1x - p2x, p2y - p1y)
-            rotate(angle + HALF_PI)
-            x1 = cos(beta) * r1
-            y1 = sin(beta) * r1
-            x2 = cos(beta) * r2
-            y2 = sin(beta) * r2
-            #print((d, beta, ri, x1, y1, x2, y2))
-            beginShape()  
-            arc_func(offset, 0, r1 * 2, r1 * 2,
-                -beta - PI, beta - PI, mode=2, **kwargs)
-            arc_func(d - offset, 0, r2 * 2, r2 * 2,
-                beta - PI, PI - beta, mode=2, **kwargs)
-            endShape(CLOSE)
-    else:
+        clipped_ri_over_d = min(1, max(-1, ri / d))
+        beta = asin(clipped_ri_over_d) + HALF_PI
+        pushMatrix()
+        translate(p1x, p1y)
+        angle = atan2(p1x - p2x, p2y - p1y)
+        rotate(angle + HALF_PI)
+        x1 = cos(beta) * r1
+        y1 = sin(beta) * r1
+        x2 = cos(beta) * r2
+        y2 = sin(beta) * r2
+        beginShape()
+        offset = shorter / 2.0 if shorter < d else d / 2.0
+        arc_func(offset, 0, r1 * 2, r1 * 2,
+                 -beta - PI, beta - PI, mode=2, **kwargs)
+        arc_func(d - offset, 0, r2 * 2, r2 * 2,
+                 beta - PI, PI - beta, mode=2, **kwargs)
+        endShape(CLOSE)
+        popMatrix()
+    elif draw_internal_circles:
         arc_func(p1x, p1y, r1 * 2, r1 * 2, 0, TWO_PI, **kwargs)
         arc_func(p2x, p2y, r2 * 2, r2 * 2, 0, TWO_PI, **kwargs)
