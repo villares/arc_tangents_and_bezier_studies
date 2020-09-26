@@ -8,7 +8,6 @@ def setup():
     size(500, 500)
     
 def draw():
-    global a_arc
     background(200)
     fill(0)
     text("press any key to see p_arc polygonal aproximantion used", 20, 20)
