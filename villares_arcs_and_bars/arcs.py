@@ -5,7 +5,7 @@ From github.com/villares/villares/arcs.py
 2020-09-22 Merges/renames several versions of the arc related functions
 2020-09-24 Updates arc_filleted_poly and arc_augmented_poly
 2020-09-25 Added bar() and var_bar()
-2020-09-26 Moved code from bar() to var_bar() & arc_func is now kwarg
+2020-09-26 Moved code from bar() to var_bar() and added several new kwargs
 """
 from warnings import warn
 from line_geometry import is_poly_self_intersecting, triangle_area
@@ -412,7 +412,7 @@ def var_bar(p1x, p1y, p2x, p2y, r1, r2=None, **kwargs):
     # 2020-9-25 Added **kwargs, now one can use arc_func=p_arc & num_points=N   
     # 2020-9-26 Added treatment to shorter=N so as to incorporate bar() use.
                 Added a keyword argument, internal=True is the default,
-                internal=False disables drawing internal circles (d < max + r2).
+                internal=False disables drawing internal circles.
                 Minor cleanups, and removed "with" for pushMatrix().
     """
     r2 = r2 if r2 is not None else r1
