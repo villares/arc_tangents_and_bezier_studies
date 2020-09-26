@@ -19,8 +19,8 @@ def draw():
         var_bar(150, 180, 350, 330, 40, 0)
         bar(150, 250, 350, 450, thickness=60, shorter=100)
     else:
-        var_bar(150, 50, 350, 200, 20, 60, p_arc, num_points=4)
-        var_bar(150, 180, 350, 330, 40, 0, p_arc, num_points=6)
+        var_bar(150, 50, 350, 200, 20, 60, arc_func=p_arc, num_points=4)
+        var_bar(150, 180, 350, 330, 40, 0, arc_func=p_arc, num_points=6)
         bar(150, 250, 350, 450, thickness=60, shorter=100,
             arc_func=p_arc,num_points=3)
 
