@@ -411,15 +411,15 @@ def bar(x1, y1, x2, y2, thickness, shorter=0, arc_func=b_arc, **kwargs):
                 thickness / 2, thickness / 2,
                 arc_func=arc_func, **kwargs)
 
-def var_bar(p1x, p1y, p2x, p2y, r1, r2=None, arc_func=b_arc, **kwargs):
+def var_bar(p1x, p1y, p2x, p2y, r1, r2=None, **kwargs):
     """
     Tangent/tangent shape on 2 circles of arbitrary radius
 
     # 2020-9-25 Added arc_func and **kwargs for use with p_arc num_points=N argument.   
     """
-    if r2 is None:
-        r2 = r1
-    #line(p1x, p1y, p2x, p2y)
+    r2 = r2 if r2 is not None else r1
+    arc_func = kwargs.pop('arc_func', None) or b_arc
+
     d = dist(p1x, p1y, p2x, p2y)
     ri = r1 - r2
     if d > abs(ri):
