@@ -41,7 +41,6 @@ def b_arc(cx, cy, w, h, start_angle, end_angle, mode=0):
           2 "naked" like normal, but without beginShape() and
              endShape() for use inside a larger PShape.
     """
-    DEBUG = False  # More of a nice visual display of the arc subdivision.
     # Based on ideas from Richard DeVeneza via code by Gola Levin:
     # http://www.flong.com/blog/2009/bezier-approximation-of-a-circular-arc-in-processing/
     theta = end_angle - start_angle
@@ -79,8 +78,7 @@ def b_arc(cx, cy, w, h, start_angle, end_angle, mode=0):
         py2 = cy + ry * ry2
         px3 = cx + rx * rx3
         py3 = cy + ry * ry3
-        if DEBUG: 
-            stroke(0)
+        if DEBUG:
             ellipse(px3, py3, 3, 3)
             ellipse(px0, py0, 5, 5)
     # Drawing
