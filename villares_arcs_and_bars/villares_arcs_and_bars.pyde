@@ -19,7 +19,6 @@ def draw():
         var_bar(150, 160, 350, 310, 40, 0)
         bar(150, 50, 350, 250, thickness=60, shorter=mouseX)
         var_bar(150, 250, 150 + mouseX / 2, 250 + mouseX *.40, 20, 60)  
-
     else:
         var_bar(150, 160, 350, 310, 40, 0, arc_func=p_arc, num_points=6)
         bar(150, 50, 350, 250, thickness=60, shorter=mouseX,
