@@ -4,6 +4,7 @@
  http://www.flong.com/blog/2009/bezier-approximation-of-a-circular-arc-in-processing/
 """
 
+DEBUG = False
 radius = 300  # radius of the circular arc
 cx = 340  # center of the circular arc
 cy = 340
