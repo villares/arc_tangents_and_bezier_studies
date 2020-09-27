@@ -1,38 +1,52 @@
 # Alexandre B A Villares - https://abav.lugaralgum.com/sketch-a-day
 
-from polys import poly, poly_filleted, poly_arc_augmented
-from b_polys import b_poly_filleted, b_poly_arc_augmented
-from c_polys import c_poly_filleted, c_poly_arc_augmented
+from random import sample
+from itertools import product
 
+import arcs  # github.com/villares/villares
 
-pts_list = [(100, 300), (400, 200), (300, 400), (100, 300)]
-rad_list = [40, 80, 20, 50] 
+arcs.DEBUG = True
+BORDER = 100
+SIZE = 100
+NUM_POINTS = 10
 
 def setup():
-    size(500, 500)
-    # noFill()
-    strokeWeight(4)
+    size(800, 400)
+    create_list()
+
+def create_list():
+    global p_list, r_list
+    radii = [10, 20, 20, 20, 20, 30, 30, 30, 30, 40, 40, 40, 40]
+    grid = list(product(range(BORDER, width - BORDER + 1, SIZE),
+                        range(BORDER, height - BORDER + 1, SIZE)))
+    r_list = sample(radii, NUM_POINTS)
+    p_list = sample(grid, NUM_POINTS)
+    # print('done')
 
 def draw():
-    background(240)
-    stroke(255)
+    background(210, 200, 200)
+    # print(arcs.arc_augmented_poly(p_list, r_list, check_intersection=True))
+    stroke(128)
+    strokeWeight(10)
     noFill()
-    poly(pts_list)
-    stroke(0, 0, 0)
+    translate(4, 10)
+    arcs.arc_augmented_poly(p_list, r_list, arc_func=arcs.p_arc, num_points=16)
+    filter(BLUR, 4)
+    translate(-3, -3)
+    strokeWeight(2)
+    stroke(0)
+    fill(220, 220, 255, 150)
+    arcs.arc_augmented_poly(p_list, r_list, arc_func=arcs.b_arc)
+
+    strokeWeight(1)
     noFill()
-    if not keyPressed or key == "b":
-        fill(0, 200, 0, 100) 
-        b_poly_arc_augmented(pts_list, rad_list)
-        fill(0, 0, 200, 100)
-        b_poly_filleted(pts_list, rad_list)
-    elif key == " ":
-        poly_arc_augmented(pts_list, rad_list)
-        poly_filleted(pts_list, rad_list)
-    elif key == "c":
-        fill(0, 200, 0, 100) 
-        c_poly_arc_augmented(pts_list, rad_list)
-        fill(0, 0, 200, 100)
-        c_poly_filleted(pts_list, rad_list)             
-    if mousePressed:
-        pts_list[0] = (mouseX, mouseY)
-    
+    stroke(0)
+    arcs.arc_filleted_poly(p_list, map(abs, r_list), arc_func=arcs.b_arc)
+
+
+def keyPressed():
+    # print('space')
+    if key == ' ':
+        create_list()
+    if key == 's':
+        saveFrame('####.png')
