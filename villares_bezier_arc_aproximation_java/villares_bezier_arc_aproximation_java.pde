@@ -1,5 +1,5 @@
 /* 
- Written by Alexandre B A Villares for Processing Python Mode 
+ Written by Alexandre B A Villares first for Processing Python Mode, this is the Java mode version.
  Based on Golan Levin's approximating a circular arc with a cubic Bezier curve.
  http){//www.flong.com/blog/2009/bezier-approximation-of-a-circular-arc-in-processing/
  */
