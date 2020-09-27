@@ -12,13 +12,14 @@ The `b_arc` function can be used inside `beginShape()`/`endShape()` as a kind of
 
 ### More arcs and tangents
 
-More stuff based on `b_arc`, can be found at [`arcs.py`](https://raw.githubusercontent.com/villares/villares/master/arcs.py), most functions can also be used with `p_arc`.
-At this point it is Processing Python mode only, as I have not yet ported them to other languages.
+More stuff based on `b_arc`, can be found at [`arcs.py`](https://raw.githubusercontent.com/villares/villares/master/arcs.py), most functions can also be used with `p_arc`(a polygonal aproximantion of an arc). At this point it is Processing Python mode only, as I have not yet ported them to other languages.
+
 *Feel free to contribute porting stuff!*
 
 - Simple `bar` and `var_bar` functions (draws two connected circles)
-- Rounding polygons "outside" with `arc_augmented_poly`
-   - uses a `circle_circle_tangent`function
-- Rounding polygons "in", filleted polygons `arc_filleted_poly`
-- `p_arc` a polygonal aproximantion of an arc
+  > ![](https://raw.githubusercontent.com/villares/arc_tangents_and_bezier_studies/master/villares_arcs_and_bars/villares_arcs_and_bars.gif)
 
+- Rounding polygons "outside" with `arc_augmented_poly`
+   - uses `circ_circ_tangent` function
+- Rounding polygons "in", filleted polygons `arc_filleted_poly`
+   - uses `arc_corner`function`
