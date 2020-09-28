@@ -11,14 +11,22 @@ The `b_arc` function can be used inside `beginShape()`/`endShape()` as a kind of
   - [`b_arc`](/villares_bezier_arc_aproximation/villares_bezier_arc_aproximation.pyde) Processing Python (also works on pyp5js)
   - [`b_arc`](/villares_bezier_arc_aproximation_java/villares_bezier_arc_aproximation_java.pde) Processing Java 
   - [`b_arc`](/villares_bezier_arc_aproximation_p5js/villares_bezier_arc_aproximation_p5js.js) p5.js
-   >
+
+   > ![b_arc](villares_bezier_arc_aproximation/b_arc.png)
    > ```python
-   > x, y, w, h, start_angle, end_angle = 100, 200, 100, 100, 0, HALF_PI + QUARTER_PI
-   > b_arc(x, y, w, h, start_angle, end_angle)  # standalone arc
+   > x, y, w, h, start_angle, end_angle = 75, 100, 100, 100, 0, PI + QUARTER_PI
+   > # Standalone arc replacement
+   > b_arc(x, y, w, h, start_angle, end_angle)
    >
-   > x += 300
+   > # mode=2 for use inside beginShape/endShape
+   > x += 125
    > beginShape()
-   > b_arc(x, y, w, h, start_angle, end_angle, mode=2)  #  for use inside beginShape/endShape
+   > b_arc(x, y, w, h, start_angle, end_angle, mode=2) 
+   > endShape(CLOSE)
+   > x += 125
+   > beginShape()
+   > b_arc(x, y, w, h, start_angle, end_angle, mode=2)
+   > vertex(x, y)
    > endShape(CLOSE)
    > ```
 
