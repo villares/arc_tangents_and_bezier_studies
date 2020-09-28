@@ -21,10 +21,29 @@ More stuff based on `b_arc`, code kept at [`arcs.py`](https://raw.githubusercont
 - `half_circle` ande `quarter_circle` are similar `arc` (or `b_arc`/`p_arc`) wrappers.
 
 - Simple `bar` and `var_bar` functions to draws "two connected circles" (works in pyp5js)
-  > ![](https://raw.githubusercontent.com/villares/arc_tangents_and_bezier_studies/master/villares_arcs_and_bars/villares_arcs_and_bars.gif)
+
+    > ![](https://raw.githubusercontent.com/villares/arc_tangents_and_bezier_studies/master/villares_arcs_and_bars/villares_arcs_and_bars.gif)
+    > ```python
+    > if not keyPressed:
+    >     # By default arc_func=b_arc
+    >     bar(50, 50, 350, 250, thickness=60, shorter=mouseX)
+    >     var_bar(50, 160, 350, 310, 40, 0)
+    >     var_bar(50, 250, 50 + mouseX * .7, 250 + mouseX * .25, 20, 40)
+    > else:
+    >     bar(50, 50, 350, 250, thickness=60, shorter=mouseX,
+    >         arc_func=p_arc, num_points=3)
+    >     var_bar(50, 160, 350, 310, 40, 0, arc_func=p_arc, num_points=6)
+    >     var_bar(50, 250, 50 + mouseX / 2, 250 + mouseX * .20, 20, 40,
+    >             arc_func=p_arc, num_points=8)
+    > ```
+
 
 - Rounding polygons "outside" with `arc_augmented_poly`
    - uses `circ_circ_tangent` function
 
 - Rounding polygons "in", filleted polygons `arc_filleted_poly`
    - uses `arc_corner`function`
+
+```
+
+```
