@@ -36,6 +36,22 @@ More stuff based on `b_arc`, code kept at [`arcs.py`](https://raw.githubusercont
 
 - The `circle_arc` function tries to create a simpler interface for Processing `arc`, asking for *x*, *y*, *radius*, *start_angle*, and *sweep* (instead of *width*, *height* and *end_angle*). Now it also allows `b_arc` and `p_arc` drawing. The `half_circle` and `quarter_circle` are similar `arc` (or `b_arc`/`p_arc`) wrappers using a mix of Processing contants to define rotation.
 
+    > ![circle_arc](villares_bezier_arc_aproximation/circle_arc.png)
+    > ```python
+    > circle_arc(x, y, radius, start_angle, sweep)
+    > circle_arc(x, y, radius, -QUARTER_PI / 2, -HALF_PI, arc_func=p_arc, num_points=4)
+    > 
+    > x, y1, y2 = 190, 95, 105
+    > half_circle(x, y1, radius, UP, CHORD)  # default 'arc' mode
+    > half_circle(x, y2, radius, DOWN, arc_func=b_arc)
+    > 
+    > x1, x2, y1, y2 = 300, 310, 95, 105
+    > quarter_circle(x1, y1, radius, TOP + LEFT, CHORD)  # default 'arc' mode
+    > quarter_circle(x1, y2, radius, BOTTOM + LEFT, PIE)
+    > quarter_circle(x2, y1, radius, TOP + RIGHT)
+    > quarter_circle(x2, y2, radius, BOTTOM + RIGHT, arc_func=b_arc)
+    > ```
+
 - The `bar` and `var_bar` functions draws "two connected circles" (both work in pyp5js, [demo here](https://abav.lugaralgum.com/arc_tangents_and_bezier_studies/villares_arcs_and_bars_pyp5js/)!)
 
     > ![](https://raw.githubusercontent.com/villares/arc_tangents_and_bezier_studies/master/villares_arcs_and_bars/villares_arcs_and_bars.gif)
