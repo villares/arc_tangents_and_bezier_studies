@@ -60,15 +60,16 @@ More stuff based on `b_arc`, code kept at [`arcs.py`](https://raw.githubusercont
 
     > ![circle_arc](villares_bezier_arc_aproximation/circle_arc.png)
     > ```python
-    > circle_arc(x, y, radius, start_angle, sweep)
+    > x, y, radius, start_angle, sweep = 75, 105, 50, 0, PI + QUARTER_PI
+    > circle_arc(x, y, radius, start_angle, sweep)    # default 'arc' wrapper mode
     > circle_arc(x, y, radius, -QUARTER_PI / 2, -HALF_PI, arc_func=p_arc, num_points=4)
     > 
     > x, y1, y2 = 190, 95, 105
-    > half_circle(x, y1, radius, UP, CHORD)  # default 'arc' mode
+    > half_circle(x, y1, radius, UP, CHORD)  # default 'arc' wrapper mode
     > half_circle(x, y2, radius, DOWN, arc_func=b_arc)
     > 
     > x1, x2, y1, y2 = 300, 310, 95, 105
-    > quarter_circle(x1, y1, radius, TOP + LEFT, CHORD)  # default 'arc' mode
+    > quarter_circle(x1, y1, radius, TOP + LEFT, CHORD)  # default 'arc' wrapper mode
     > quarter_circle(x1, y2, radius, BOTTOM + LEFT, PIE)
     > quarter_circle(x2, y1, radius, TOP + RIGHT)
     > quarter_circle(x2, y2, radius, BOTTOM + RIGHT, arc_func=b_arc)
