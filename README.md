@@ -18,8 +18,8 @@ The `b_arc` function can be used inside `beginShape()`/`endShape()` as a kind of
    >
    > x += 300
    > beginShape()
-   > b_arc(x, y, w, h, start_angle, end_angle, mode=2)  #  for use inside beginShape/EndShape
-   > beginShape(CLOSE)
+   > b_arc(x, y, w, h, start_angle, end_angle, mode=2)  #  for use inside beginShape/endShape
+   > endShape(CLOSE)
    > ```
 
 ### More arcs and tangents
