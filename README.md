@@ -11,6 +11,16 @@ The `b_arc` function can be used inside `beginShape()`/`endShape()` as a kind of
   - [`b_arc`](/villares_bezier_arc_aproximation/villares_bezier_arc_aproximation.pyde) Processing Python (also works on pyp5js)
   - [`b_arc`](/villares_bezier_arc_aproximation_java/villares_bezier_arc_aproximation_java.pde) Processing Java 
   - [`b_arc`](/villares_bezier_arc_aproximation_p5js/villares_bezier_arc_aproximation_p5js.js) p5.js
+   >
+   > ```python
+   > x, y, w, h, start_angle, end_angle = 100, 200, 100, 100, 0, HALF_PI + QUARTER_PI
+   > b_arc(x, y, w, h, start_angle, end_angle)  # standalone arc
+   >
+   > x += 300
+   > beginShape()
+   > b_arc(x, y, w, h, start_angle, end_angle, mode=2)  #  for use inside beginShape/EndShape
+   > beginShape(CLOSE)
+   > ```
 
 ### More arcs and tangents
 
