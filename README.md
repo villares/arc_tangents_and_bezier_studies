@@ -3,7 +3,7 @@
 ![sketch_2020_09_26a](https://raw.githubusercontent.com/villares/sketch-a-day/master/2020/sketch_2020_09_26a/sketch_2020_09_26a.gif)
 > from sketch-a-day project, [sketch_2020_09_26a](https://github.com/villares/sketch-a-day/tree/master/2020/sketch_2020_09_26a)
 
-I have added very little new ideas here, most of my findings & previous studies were moved into the `prior_art` folder, I tried to attribute stuff with links.
+I have added very little new ideas here, most of my findings & previous studies were moved into the `PRIOR_ART` folder, I tried to attribute stuff with links.
 
 ### Bezier approximation of an arc
 
@@ -73,7 +73,7 @@ More stuff based on `b_arc`, code kept at [`arcs.py`](https://raw.githubusercont
    > arc_augmented_poly(p_list,r_list)  # arc_func=b_arc by default
    > ```
 
-- The `circle_arc` function tries to create a simpler interface for Processing `arc`, asking for *x*, *y*, *radius*, *start_angle*, and *sweep* (instead of *width*, *height* and *end_angle*). Now it also allows `b_arc` and `p_arc` drawing. The `half_circle` and `quarter_circle` are similar `arc` (or `b_arc`/`p_arc`) wrappers using a mix of Processing constants to define rotation.
+- The `circle_arc` function tries to create a simpler interface for Processing's `arc`, asking for *x*, *y*, *radius*, *start_angle*, and *sweep* (*radius* instead of *width*, *height* and *sweep* instead of *end_angle*). Now it also allows drawing with `b_arc` or `p_arc`. The `half_circle` and `quarter_circle` are similar, very silly `arc` (or `b_arc`/`p_arc`) wrappers using a mix of Processing constants to define rotation.
 
     > ![circle_arc](villares_bezier_arc_aproximation/circle_arc.png)
     > ```python
@@ -82,8 +82,8 @@ More stuff based on `b_arc`, code kept at [`arcs.py`](https://raw.githubusercont
     > circle_arc(x, y, radius, -QUARTER_PI / 2, -HALF_PI, arc_func=p_arc, num_points=4)
     > 
     > x, y1, y2 = 190, 95, 105
-    > half_circle(x, y1, radius, UP, CHORD)  # default 'arc' wrapper mode
-    > half_circle(x, y2, radius, DOWN, arc_func=b_arc)
+    > half_circle(x, y1, radius, TOP, CHORD)  # default 'arc' wrapper mode
+    > half_circle(x, y2, radius, BOTTOM, arc_func=b_arc)
     > 
     > x1, x2, y1, y2 = 300, 310, 95, 105
     > quarter_circle(x1, y1, radius, TOP + LEFT, CHORD)  # default 'arc' wrapper mode
