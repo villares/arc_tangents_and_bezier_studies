@@ -62,12 +62,26 @@ More stuff based on `b_arc`, code kept at [`arcs.py`](https://raw.githubusercont
    > …
    > arc_filleted_poly(p_list,r_list)  # arc_func=b_arc by default
    > ```
+   > ![](villares_filleted_and_arc_augmented_polys/arc_filleted_poly.gif)
+   > ```python
+   > p_list = [(30, 160), (250, 50), (350, 150), (mouseX, mouseY)]
+   > r_list = [20, 30, 40, 30]
+   > …
+   > arc_filleted_poly(p_list,r_list)  # arc_func=b_arc by default
+   > ```
 
 - Rounding polygons "outside" with `arc_augmented_poly`, takes a sequence of points and radii and calculates geometry with the `circ_circ_tangent` function. If two points are too close it will reduce the radii.
 
    > ![](villares_filleted_and_arc_augmented_polys/arc_augmented_poly.png)
    > ```python
    > p_list = [(30, 160), (250, 50), (350, 150), (200, 100)]
+   > r_list = [20, 30, 40, 30]
+   > …
+   > arc_augmented_poly(p_list,r_list)  # arc_func=b_arc by default
+   > ```
+   > ![](villares_filleted_and_arc_augmented_polys/arc_augmented_poly.gif)
+   > ```python
+   > p_list = [(30, 160), (250, 50), (350, 150), (mouseX, mouseY)]
    > r_list = [20, 30, 40, 30]
    > …
    > arc_augmented_poly(p_list,r_list)  # arc_func=b_arc by default
