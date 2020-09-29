@@ -60,7 +60,7 @@ More stuff based on `b_arc`, code kept at [`arcs.py`](https://raw.githubusercont
    > p_list = [(30, 160), (250, 50), (350, 150), (200, 100)]
    > r_list = [20, 30, 40, 30]
    > …
-   > arc_filleted_poly(p_list,r_list)
+   > arc_filleted_poly(p_list,r_list)  # arc_func=b_arc by default
    > ```
 
 - Rounding polygons "outside" with `arc_augmented_poly`, takes a sequence of points and radii and calculates geometry with the `circ_circ_tangent` function. If two points are too close it will reduce the radii.
@@ -70,7 +70,7 @@ More stuff based on `b_arc`, code kept at [`arcs.py`](https://raw.githubusercont
    > p_list = [(30, 160), (250, 50), (350, 150), (200, 100)]
    > r_list = [20, 30, 40, 30]
    > …
-   > arc_augmented_poly(p_list,r_list)
+   > arc_augmented_poly(p_list,r_list)  # arc_func=b_arc by default
    > ```
 
 - The `circle_arc` function tries to create a simpler interface for Processing `arc`, asking for *x*, *y*, *radius*, *start_angle*, and *sweep* (instead of *width*, *height* and *end_angle*). Now it also allows `b_arc` and `p_arc` drawing. The `half_circle` and `quarter_circle` are similar `arc` (or `b_arc`/`p_arc`) wrappers using a mix of Processing constants to define rotation.
