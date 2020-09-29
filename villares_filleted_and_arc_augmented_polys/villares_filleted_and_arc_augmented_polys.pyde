@@ -1,52 +1,24 @@
 # Alexandre B A Villares - https://abav.lugaralgum.com/sketch-a-day
 
-from random import sample
-from itertools import product
-
-import arcs  # github.com/villares/villares
-
-arcs.DEBUG = True
-BORDER = 100
-SIZE = 100
-NUM_POINTS = 10
+# github.com/villares/villares
+from arcs import arc_filleted_poly, arc_augmented_poly  
+from line_geometry import poly  # arc_augmented_polu also needs this
 
 def setup():
-    size(800, 400)
-    create_list()
+    size(400, 200)
 
-def create_list():
-    global p_list, r_list
-    radii = [10, 20, 20, 20, 20, 30, 30, 30, 30, 40, 40, 40, 40]
-    grid = list(product(range(BORDER, width - BORDER + 1, SIZE),
-                        range(BORDER, height - BORDER + 1, SIZE)))
-    r_list = sample(radii, NUM_POINTS)
-    p_list = sample(grid, NUM_POINTS)
-    # print('done')
-
-def draw():
-    background(210, 200, 200)
-    # print(arcs.arc_augmented_poly(p_list, r_list, check_intersection=True))
-    stroke(128)
-    strokeWeight(10)
+    p_list = [(30, 160), (250, 50), (350, 150), (200, 100)]
+    r_list = [20, 30, 40, 30]
+    
+    noStroke()
+    strokeJoin(ROUND)
+    poly(p_list)
+    stroke(180)
     noFill()
-    translate(4, 10)
-    arcs.arc_augmented_poly(p_list, r_list, arc_func=arcs.p_arc, num_points=16)
-    filter(BLUR, 4)
-    translate(-3, -3)
-    strokeWeight(2)
-    stroke(0)
-    fill(220, 220, 255, 150)
-    arcs.arc_augmented_poly(p_list, r_list, arc_func=arcs.b_arc)
-
-    strokeWeight(1)
+    for p, r in zip(p_list, r_list): circle(p[0], p[1], r*2)
     noFill()
     stroke(0)
-    arcs.arc_filleted_poly(p_list, map(abs, r_list), arc_func=arcs.b_arc)
-
-
-def keyPressed():
-    # print('space')
-    if key == ' ':
-        create_list()
-    if key == 's':
-        saveFrame('####.png')
+    # arc_filleted_poly(p_list,r_list)
+    # saveFrame('arc_filleted_poly.png')
+    arc_augmented_poly(p_list,r_list)
+    saveFrame('arc_augmented_poly.png')

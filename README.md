@@ -1,6 +1,7 @@
 #  Arc, tangents & Bezier studies
 
-![](https://raw.githubusercontent.com/villares/arc_tangents_and_bezier_studies/master/villares_filleted_and_arc_augmented_polys/sketch_2020_09_26a.gif)
+![sketch_2020_09_26a](https://raw.githubusercontent.com/villares/sketch-a-day/master/2020/sketch_2020_09_26a/sketch_2020_09_26a.gif)
+> from sketch-a-day project, [sketch_2020_09_26a](https://github.com/villares/sketch-a-day/tree/master/2020/sketch_2020_09_26a)
 
 I have added very little new ideas here, most of my findings & previous studies were moved into the `prior_art` folder, I tried to attribute stuff with links.
 
@@ -32,11 +33,11 @@ The `b_arc` function can be used inside `beginShape()`/`endShape()` as a kind of
 
 ### More arcs and tangents
 
-More stuff based on `b_arc`, code kept at [`arcs.py`](https://raw.githubusercontent.com/villares/villares/master/arcs.py). Most functions can also be used with `p_arc`(a polygonal aproximantion of an arc). Except were noted, mostly Processing Python mode funtions, as I have not yet ported them to other languages. *Feel free to contribute porting stuff!*
+More stuff based on `b_arc`, code kept at [`arcs.py`](https://raw.githubusercontent.com/villares/villares/master/arcs.py). Most functions can also be used with `p_arc`(a polygonal approximation of an arc). Except were noted, mostly Processing Python mode functions, as I have not yet ported them to other languages. *Feel free to contribute porting stuff!*
 
 - The `bar` and `var_bar` functions draws "two connected circles" (both work in pyp5js, [demo here](https://abav.lugaralgum.com/arc_tangents_and_bezier_studies/villares_arcs_and_bars_pyp5js/)!)
 
-    > ![](https://raw.githubusercontent.com/villares/arc_tangents_and_bezier_studies/master/villares_arcs_and_bars/villares_arcs_and_bars.gif)
+    > ![](villares_arcs_and_bars/villares_arcs_and_bars.gif)
     > ```python
     > …
     > if not keyPressed:  # By default arc_func=b_arc
@@ -52,9 +53,25 @@ More stuff based on `b_arc`, code kept at [`arcs.py`](https://raw.githubusercont
     >             arc_func=p_arc, num_points=8)
     > ```
 
-- Rounding polygons "outside" with `arc_augmented_poly`, takes a sequence of points and radii and calculates geometry with the `circ_circ_tangent` function.
+- Rounding polygons "in", filleted polygons `arc_filleted_poly`, takes a sequence of points and radii and uses the `arc_corner`function to draw. Notice it may need to make a radius smaller to fit sometimes.
 
-- Rounding polygons "in", filleted polygons `arc_filleted_poly`, takes a sequence of points and radii and uses the `arc_corner`function to draw.
+   > ![](villares_filleted_and_arc_augmented_polys/arc_filleted_poly.png)
+   > ```python
+   > p_list = [(30, 160), (250, 50), (350, 150), (200, 100)]
+   > r_list = [20, 30, 40, 30]
+   > …
+   > arc_filleted_poly(p_list,r_list)
+   > ```
+
+- Rounding polygons "outside" with `arc_augmented_poly`, takes a sequence of points and radii and calculates geometry with the `circ_circ_tangent` function. If two points are too close it will reduce the radii.
+
+   > ![](villares_filleted_and_arc_augmented_polys/arc_augmented_poly.png)
+   > ```python
+   > p_list = [(30, 160), (250, 50), (350, 150), (200, 100)]
+   > r_list = [20, 30, 40, 30]
+   > …
+   > arc_augmented_poly(p_list,r_list)
+   > ```
 
 - The `circle_arc` function tries to create a simpler interface for Processing `arc`, asking for *x*, *y*, *radius*, *start_angle*, and *sweep* (instead of *width*, *height* and *end_angle*). Now it also allows `b_arc` and `p_arc` drawing. The `half_circle` and `quarter_circle` are similar `arc` (or `b_arc`/`p_arc`) wrappers using a mix of Processing constants to define rotation.
 
@@ -74,5 +91,7 @@ More stuff based on `b_arc`, code kept at [`arcs.py`](https://raw.githubusercont
     > quarter_circle(x2, y1, radius, TOP + RIGHT)
     > quarter_circle(x2, y2, radius, BOTTOM + RIGHT, arc_func=b_arc)
     > ```
+
+```
 
 ```

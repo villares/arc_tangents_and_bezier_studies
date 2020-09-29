@@ -124,6 +124,7 @@ def poly(points, holes=None, closed=True):
             return 0
 
     beginShape()  # inicia o PShape
+    last = -1 if closed else None
     for p in points:
         if len(p) == 2 or p[2] == 0:
             vertex(p[0], p[1])
