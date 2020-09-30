@@ -19,7 +19,7 @@ def draw():
     poly(p_list)
     stroke(180)
     noFill()
-    for p, r in zip(p_list, r_list): circle(p[0], p[1], r*2)
+    # for p, r in zip(p_list, r_list): circle(p[0], p[1], r*2)
     noFill()
     stroke(0)
     arc_filleted_poly(p_list,r_list)
