@@ -3,11 +3,11 @@
 From github.com/villares/villares/line_geometry.py
 
 2020-09-25
+2020-10-15 Fixed line_instersection typo, added dist() & removed TOLERANCE
+2020-10-17 Added point_in_screen(), renamed poly() -> draw_poly()
 """
 
 class Line():
-
-    TOLERANCE = EPSILON
 
     def __init__(self, a, b):
         self.a = PVector(*a)
@@ -15,6 +15,9 @@ class Line():
 
     def __getitem__(self, i):
         return (self.a, self.b)[i]
+
+    def dist(self):
+        return PVector.dist(self.a, self.b)
 
     def plot(self):
         line(self.a.x, self.a.y, self.b.x, self.b.y)
@@ -27,21 +30,23 @@ class Line():
         return Line(a, b)
 
     def intersect(self, other):
-        return line_instersect(self, other)
+        return line_intersect(self, other)
 
-    def point_over(self, x, y, TOLERANCE):
+    def contains_point(self, x, y, tolerance=0.1):
         return point_over_line(x, y,
                                self[0][0], self[0][1],
                                self[1][0], self[1][1],
-                               TOLERANCE)
+                               tolerance)
 
-    def point_colinear(self, x, y, TOLERANCE):
+    point_over = contains_point
+
+    def point_colinear(self, x, y, tolerance=EPSILON):
         return points_are_colinear(x, y,
                                    self[0][0], self[0][1],
                                    self[1][0], self[1][1],
-                                   TOLERANCE)
+                                   tolerance)
 
-def line_instersect(line_a, line_b):
+def line_intersect(line_a, line_b):
     """
     code adapted from Bernardo Fontes 
     https://github.com/berinhard/sketches/
@@ -64,7 +69,7 @@ def line_instersect(line_a, line_b):
     return PVector(x, y)
 
 def point_over_line(px, py, lax, lay, lbx, lby,
-                    tolerance=EPSILON):
+                    tolerance=0.1):
     """
     Check if point is over line using the sum of
     the distances from the point to the line ends
@@ -73,7 +78,7 @@ def point_over_line(px, py, lax, lay, lbx, lby,
     ab = dist(lax, lay, lbx, lby)
     pa = dist(lax, lay, px, py)
     pb = dist(px, py, lbx, lby)
-    return (pa + pb) <= ab + tolerance / 100.0
+    return (pa + pb) <= ab + tolerance
 
 def points_are_colinear(ax, ay, bx, by, cx, cy,
                         tolerance=EPSILON):
@@ -94,17 +99,17 @@ def triangle_area(a, b, c):
 
 #     def __init__(iterable):
 #         self.__points = [p for p in iterable]
-    
+
 #     def __iter__(self):
 #         return iter(self.__points)
-    
+
 #     def plot(self):
 #         poly(self)
-        
-#     draw = poly        
-            
 
-def poly(points, holes=None, closed=True):
+#     draw = poly
+
+
+def draw_poly(points, holes=None, closed=True):
     """
     Aceita como pontos sequencias de tuplas, lista ou vetores com (x, y) ou (x, y, z).
     Note que `holes` espera uma sequencias de sequencias ou uma única sequencia de
@@ -124,13 +129,12 @@ def poly(points, holes=None, closed=True):
             return 0
 
     beginShape()  # inicia o PShape
-    last = -1 if closed else None
     for p in points:
         if len(p) == 2 or p[2] == 0:
             vertex(p[0], p[1])
         else:
             vertex(*p)  # desempacota pontos em 3d
-    # tratamento dos furos, se houver           
+    # tratamento dos furos, se houver
     holes = holes or []  # equivale a: holes if holes else []
     if holes and depth(holes) == 2:  # sequência única de pontos
         holes = (holes,)     # envolve em um tupla
@@ -147,6 +151,8 @@ def poly(points, holes=None, closed=True):
         endShape(CLOSE)
     else:
         endShape()
+
+poly = draw_poly
 
 def edges(poly_points):
     return pairwise(poly_points) + [(poly_points[-1], poly_points[0])]
@@ -257,3 +263,6 @@ def inter_lines(L, poly_points):
                 inter_lines.append(Line(PVector(a.x, a.y),
                                         PVector(b.x, b.y)))
     return inter_lines
+
+def point_in_screen(p):
+    return 0 <= p[0] <= width and 0 <= p[1] <= height
