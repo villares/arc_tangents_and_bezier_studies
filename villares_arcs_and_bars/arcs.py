@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 """
-From github.com/villares/villares/arcs.py
+From https://github.com/villares/villares/blob/master/arcs.py
 
 2020-09-22 Merges/renames several versions of the arc related functions
 2020-09-24 Updates arc_filleted_poly and arc_augmented_poly
 2020-09-25 Added bar() and var_bar()
 2020-09-26 Moved code from bar() to var_bar() and added several new kwargs
 2020-09-27 Revising arc_filleted_poly, added kwargs. Revised circle_arc and related functions
+2020-11    Improving compatibility with pyp5js, not using PVector anymore
 """
 from warnings import warn
 from line_geometry import is_poly_self_intersecting, triangle_area
@@ -23,18 +24,15 @@ ROTATION = {0: 0,
             3: PI + HALF_PI,
             RIGHT: PI + HALF_PI,
             BOTTOM + RIGHT: 0,
-            DOWN + RIGHT: 0,
-            DOWN + LEFT: HALF_PI,
             BOTTOM + LEFT: HALF_PI,
             TOP + LEFT: PI,
-            UP + LEFT: PI,
             TOP + RIGHT: PI + HALF_PI,
-            UP + RIGHT: PI + HALF_PI,
             }
 
 def circle_arc(x, y, radius, start_ang, sweep_ang, *args, **kwargs):
     arc_func = kwargs.pop('arc_func', arc)
-    arc_func(x, y, radius * 2, radius * 2, start_ang, start_ang + sweep_ang, *args, **kwargs)
+    arc_func(x, y, radius * 2, radius * 2, start_ang,
+             start_ang + sweep_ang, *args, **kwargs)
 
 def quarter_circle(x, y, radius, quadrant, *args, **kwargs):
     circle_arc(x, y, radius, ROTATION[quadrant], HALF_PI, *args, **kwargs)
@@ -114,7 +112,7 @@ def p_circle_arc(x, y, radius, start_ang, sweep_ang, mode=0, **kwargs):
           mode=mode, **kwargs)
 
 def p_arc(cx, cy, w, h, start_angle, end_angle, mode=0,
-          num_points=24, vertex_func=vertex):
+          num_points=24, vertex_func=None):
     """
     A poly approximation of an arc using the same
     signature as the original Processing arc().
@@ -122,6 +120,7 @@ def p_arc(cx, cy, w, h, start_angle, end_angle, mode=0,
           2 "naked" like normal, but without beginShape() and
              endShape() for use inside a larger PShape.
     """
+    vertex_func = vertex_func or vertex
     sweep_angle = end_angle - start_angle
     if mode == 0:
         beginShape()
@@ -154,12 +153,16 @@ def p_arc(cx, cy, w, h, start_angle, end_angle, mode=0,
 def arc_filleted_poly(p_list, r_list, **kwargs):
     """
     Draws a 'filleted' polygon with variable radius, depends on arc_corner()
-    
+
     2020-09-24 Rewritten from poly_rounded2 to be a continous PShape 
     2020-09-27 Moved default args to kwargs, added kwargs support for custom arc_func
+    2020-11-10 Moving vertex_func=vertex inside body to make this more compatible with pyp5js
+    2020-11-11 Removing use of PVector to improve compatibility with pyp5js
     """
-    arc_func = kwargs.pop('arc_func', b_arc)  # draws with bezier aprox. arc by default
-    open_poly = kwargs.pop('open_poly', False)  # assumes a closed poly by default
+    arc_func = kwargs.pop(
+        'arc_func', b_arc)  # draws with bezier aprox. arc by default
+    # assumes a closed poly by default
+    open_poly = kwargs.pop('open_poly', False)
 
     p_list, r_list = list(p_list), list(r_list)
     beginShape()
@@ -169,8 +172,8 @@ def arc_filleted_poly(p_list, r_list, **kwargs):
                                  [p_list[-2]] + [p_list[-1]] + p_list[:-2],
                                  [r_list[-1]] + r_list[:-1]
                                  ):
-            m1 = (PVector(p0[0], p0[1]) + PVector(p1[0], p1[1])) / 2
-            m2 = (PVector(p2[0], p2[1]) + PVector(p1[0], p1[1])) / 2
+            m1 = ((p0[0] + p1[0]) / 2.0, (p0[1] + p1[1]) / 2.0)
+            m2 = ((p2[0] + p1[0]) / 2.0, (p2[1] + p1[1]) / 2.0)
             arc_corner(p1, m1, m2, r, arc_func=arc_func, **kwargs)
         endShape(CLOSE)
     else:
@@ -179,8 +182,8 @@ def arc_filleted_poly(p_list, r_list, **kwargs):
                                  [p_list[-2]] + [p_list[-1]] + p_list[:-3],
                                  [r_list[-1]] + r_list[:-2]
                                  ):
-            m1 = (PVector(p0[0], p0[1]) + PVector(p1[0], p1[1])) / 2
-            m2 = (PVector(p2[0], p2[1]) + PVector(p1[0], p1[1])) / 2
+            m1 = ((p0[0] + p1[0]) / 2.0, (p0[1] + p1[1]) / 2.0)
+            m2 = ((p2[0] + p1[0]) / 2.0, (p2[1] + p1[1]) / 2.0)
             arc_corner(p1, m1, m2, r, arc_func=arc_func, **kwargs)
         endShape()
 
@@ -188,14 +191,15 @@ def arc_corner(pc, p1, p2, r, **kwargs):
     """
     Draw an arc that 'rounds' the point pc between p1 and p2 using arc_func
     Based on '...rounded corners in a polygon' from https://stackoverflow.com/questions/24771828/
-    
     2020-09-27 Added support for custom arc_func & kwargs
+    2020-11-11 Avoiding the use of PVector
     """
-    arc_func = kwargs.pop('arc_func', b_arc)  # draws with bezier aprox. arc by default
+    arc_func = kwargs.pop(
+        'arc_func', b_arc)  # draws with bezier aprox. arc by default
 
     def proportion_point(pt, segment, L, dx, dy):
         factor = float(segment) / L if L != 0 else segment
-        return PVector((pt[0] - dx * factor), (pt[1] - dy * factor))
+        return((pt[0] - dx * factor), (pt[1] - dy * factor))
 
     # Vectors 1 and 2
     dx1, dy1 = pc[0] - p1[0], pc[1] - p1[1]
@@ -221,14 +225,14 @@ def arc_corner(pc, p1, p2, r, **kwargs):
     p2Cross = proportion_point(pc, segment, length2, dx2, dy2)
     # Calculation of the coordinates of the circle
     # center by the addition of angular vectors.
-    dx = pc[0] * 2 - p1Cross.x - p2Cross.x
-    dy = pc[1] * 2 - p1Cross.y - p2Cross.y
+    dx = pc[0] * 2 - p1Cross[0] - p2Cross[0]
+    dy = pc[1] * 2 - p1Cross[1] - p2Cross[1]
     L = sqrt(dx * dx + dy * dy)
     d = sqrt(segment * segment + max_r * max_r)
     arc_center = proportion_point(pc, d, L, dx, dy)
     # start_angle and end_angle of arc
-    start_angle = atan2(p1Cross.y - arc_center.y, p1Cross.x - arc_center.x)
-    end_angle = atan2(p2Cross.y - arc_center.y, p2Cross.x - arc_center.x)
+    start_angle = atan2(p1Cross[1] - arc_center[1], p1Cross[0] - arc_center[0])
+    end_angle = atan2(p2Cross[1] - arc_center[1], p2Cross[0] - arc_center[0])
     # Sweep angle
     sweep_angle = end_angle - start_angle
     # Some additional checks
@@ -238,20 +242,20 @@ def arc_corner(pc, p1, p2, r, **kwargs):
         sweep_angle = -sweep_angle
         nsa = True
         if DEBUG:
-            circle(arc_center.x, arc_center.y, max_r / 2)
+            circle(arc_center[0], arc_center[1], max_r / 2)
     lsa = False  # large sweep angle
     if sweep_angle > PI:
         start_angle, end_angle = end_angle, start_angle
         sweep_angle = TWO_PI - sweep_angle
         lsa = True
         if DEBUG:
-            circle(arc_center.x, arc_center.y, max_r)
+            circle(arc_center[0], arc_center[1], max_r)
     if (lsa and nsa) or (not lsa and not nsa):
         # reverse sweep direction
         start_angle, end_angle = end_angle, start_angle
         sweep_angle = -sweep_angle
     # draw "naked" arc (without beginShape & endShape)
-    arc_func(arc_center.x, arc_center.y, 2 * max_r, 2 * max_r,
+    arc_func(arc_center[0], arc_center[1], 2 * max_r, 2 * max_r,
              start_angle, start_angle + sweep_angle, mode=2, **kwargs)
 
 
