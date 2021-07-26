@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-From github.com/villares/villares/arcs.py
+From https://github.com/villares/villares/blob/main/arcs.py
 
 2020-09-22 Merges/renames several versions of the arc related functions
 2020-09-24 Updates arc_filleted_poly and arc_augmented_poly
@@ -312,6 +312,9 @@ def arc_augmented_poly(op_list, or_list=None, **kwargs):
         if or_list == None:
             r_list[i1] = a
         else:
+            # # a shrink to flip option...
+            # if abs(a) < 1:
+            #     r_list[i1] = r_list[i1] * abs(a)
             if a < 0 and auto_flip:
                 r_list[i1] = -r_list[i1]
     # reduce radius that won't fit
