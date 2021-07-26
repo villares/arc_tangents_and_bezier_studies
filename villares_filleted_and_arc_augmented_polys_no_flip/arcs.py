@@ -8,6 +8,8 @@ From github.com/villares/villares/arcs.py
 2020-09-26 Moved code from bar() to var_bar() and added several new kwargs
 2020-09-27 Revising arc_filleted_poly, added kwargs. Revised circle_arc and related functions
 2020-11    Improving compatibility with pyp5js, not using PVector anymore
+2021-07-26 Added auto-flip option to arc_augmented_poly
+
 """
 from warnings import warn
 from line_geometry import is_poly_self_intersecting, triangle_area
@@ -267,7 +269,7 @@ def arc_augmented_poly(op_list, or_list=None, **kwargs):
     2020-09-22 Renamed from b_poly_arc_augmented 
     2020-09-24 Removed Bezier mode in favour of arc_func + any keyword arguments.
     2020-09-26 Moved arc_func to kwargs, updates exceptions
-    2021-07-26 No-flip option
+    2021-07-26 auto-flip option (when concave vertex radius = -radius)
     """
     assert op_list, 'No points were provided.'
     if or_list == None:
@@ -278,7 +280,7 @@ def arc_augmented_poly(op_list, or_list=None, **kwargs):
         'Number of points and radii provided not the same.'
     check_intersection = kwargs.pop('check_intersection', False)
     arc_func = kwargs.pop('arc_func', None)
-    no_flip = kwargs.pop('no_flip', False)
+    auto_flip = kwargs.pop('auto_flip', True)
     if check_intersection and arc_func:
         warn("check_intersection mode overrides arc_func (arc_func ignored).")
     if check_intersection:
@@ -310,7 +312,7 @@ def arc_augmented_poly(op_list, or_list=None, **kwargs):
         if or_list == None:
             r_list[i1] = a
         else:
-            if a < 0 and not no_flip:
+            if a < 0 and auto_flip:
                 r_list[i1] = -r_list[i1]
     # reduce radius that won't fit
     for i1, p1 in enumerate(p_list):
