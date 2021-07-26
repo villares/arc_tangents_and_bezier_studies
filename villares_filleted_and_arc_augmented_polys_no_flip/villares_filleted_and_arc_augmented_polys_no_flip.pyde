@@ -20,10 +20,7 @@ def draw():
     draw_poly(p_list)
     noFill()
     stroke(0)
-    if keyPressed:
-        arc_augmented_poly(p_list, r_list, no_flip=True)
-    else:
-        arc_augmented_poly(p_list, r_list)
+    arc_augmented_poly(p_list, r_list, auto_flip=keyPressed)
 
     stroke(180)
     noFill()
