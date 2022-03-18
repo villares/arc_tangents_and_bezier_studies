@@ -14,7 +14,11 @@ From https://github.com/villares/villares/blob/main/arcs.py
 
 """
 from warnings import warn
-from villares.line_geometry import is_poly_self_intersecting, triangle_area
+
+try:
+    from line_geometry import is_poly_self_intersecting, triangle_area
+except ModuleNotFoundError:
+    from villares.line_geometry import is_poly_self_intersecting, triangle_area
 
 # The following block makes this compatible with py5.ixora.io
 try:
