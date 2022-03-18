@@ -3,7 +3,7 @@
 ![sketch_2020_09_26a](https://raw.githubusercontent.com/villares/sketch-a-day/master/2020/sketch_2020_09_26a/sketch_2020_09_26a.gif)
 > from sketch-a-day project, [sketch_2020_09_26a](https://github.com/villares/sketch-a-day/tree/master/2020/sketch_2020_09_26a)
 
-I have added very little new ideas here, most of my findings & previous studies were moved into the `PRIOR_ART` folder, I tried to attribute stuff with links. Please note that the most recent (and maybe unstable?) version of the Python functions shown here is [kept at this other github.com/villares/villares repository](https://raw.githubusercontent.com/villares/villares/master/arcs.py).
+I have added very little new ideas here, most of my findings & previous studies were moved into the `PRIOR_ART` folder, I tried to attribute stuff with links. Please note that the most recent (and maybe unstable?) version of the Python functions shown here are kept at this other repository: [github.com/villares/villares](https://raw.githubusercontent.com/villares/villares/master/arcs.py). You will probably want to get [`arcs.py`](https://raw.githubusercontent.com/villares/villares/master/arcs.py) and [`line_geometry.py`](https://raw.githubusercontent.com/villares/villares/master/line_geometry.py) it depends on.
 
 
 ### Bezier approximation of an arc
@@ -34,7 +34,7 @@ The `b_arc` function can be used inside `beginShape()`/`endShape()` as a kind of
 
 ### More arcs and tangents
 
-More stuff based on `b_arc`, code kept at [`arcs.py`](https://raw.githubusercontent.com/villares/villares/master/arcs.py). Most functions can also be used with `p_arc`(a polygonal approximation of an arc). Except were noted, mostly Processing Python mode functions, as I have not yet ported them to other languages. *Feel free to contribute porting stuff!*
+More stuff based on `b_arc`, code kept at [`arcs.py`](https://raw.githubusercontent.com/villares/villares/master/arcs.py). It gets some functions from [`line_geometry.py(https://raw.githubusercontent.com/villares/villares/master/line_geometry.py)). Most functions can also be used with `p_arc`(a polygonal approximation of an arc). Except were noted, mostly Processing Python mode functions, as I have not yet ported them to other languages. *Feel free to contribute porting stuff!*
 
 - The `bar` and `var_bar` functions draws "two connected circles" (both work in pyp5js, [demo here](https://abav.lugaralgum.com/arc_tangents_and_bezier_studies/villares_arcs_and_bars_pyp5js/)!)
 
