@@ -1,8 +1,8 @@
 # Arc, tangents & Bezier studies
 
-![sketch_2020_09_26a](https://raw.githubusercontent.com/villares/sketch-a-day/master/2020/sketch_2020_09_26a/sketch_2020_09_26a.gif)
+![sketch_2020_09_26a](https://raw.githubusercontent.com/villares/sketch-a-day/main/2020/sketch_2020_09_26a/sketch_2020_09_26a.gif)
 
-> from sketch-a-day project, [sketch_2020_09_26a](https://github.com/villares/sketch-a-day/tree/master/2020/sketch_2020_09_26a)
+> from sketch-a-day project, [sketch_2020_09_26a](https://github.com/villares/sketch-a-day/tree/main/2020/sketch_2020_09_26a)
 
 This repository contains the product of my studies trying to work with arcs, bezier approximations of arcs, most functions were made initially on Processing Python mode, and now work with [py5](http://py5. ixora.io). Some will work with [pyp5js](berinhard.github.io/pyp5js/) too, and I have ported `b_arc` for Processing Java and p5js. 
 
@@ -39,7 +39,7 @@ Processing *PShape* insfrastructure does not contain a fuction for embeding an a
 
 ### More arcs and tangents
 
-Other functions based on `b_arc`, and a polygonal approximation called `p_arc` are kept at [`arcs.py`](https://raw.githubusercontent.com/villares/villares/master/arcs.py).
+Other functions based on `b_arc`, and a polygonal approximation called `p_arc`, are kept at [`arcs.py`](https://raw.githubusercontent.com/villares/villares/main/arcs.py).
 
 - The `var_bar` and `bar` functions draws "two connected circles". They can be used with `p_arc`(a polygonal approximation of an arc) instead of  the default `b_arc`. Both work in pyp5js: [demo here](https://abav.lugaralgum.com/arc_tangents_and_bezier_studies/villares_arcs_and_bars_pyp5js/)
 
