@@ -41,15 +41,11 @@ Processing *PShape* insfrastructure does not contain a fuction for embeding an a
 
 Other functions based on `b_arc`, and a polygonal approximation called `p_arc` are kept at [`arcs.py`](https://raw.githubusercontent.com/villares/villares/master/arcs.py).
 
-- The `var_bar` and `bar` functions draws "two connected circles".
-  
-  - they can be used with `p_arc`(a polygonal approximation of an arc) instead of  the default `b_arc` . 
-  
-  - both work in pyp5js: [demo here](https://abav.lugaralgum.com/arc_tangents_and_bezier_studies/villares_arcs_and_bars_pyp5js/)
+- The `var_bar` and `bar` functions draws "two connected circles". They can be used with `p_arc`(a polygonal approximation of an arc) instead of  the default `b_arc`. Both work in pyp5js: [demo here](https://abav.lugaralgum.com/arc_tangents_and_bezier_studies/villares_arcs_and_bars_pyp5js/)
 
-- `var_bar_pts`, based on `arc_pts`, returns a the points that `var_bar` would draw with the same arguments (except the `internal` feature)
-  
-  - The `arc_pts` returns a list of points (as tuples), that `p_arc` would draw, but does not draw them. `p_arc` now uses `arc_pts` insternally.
+- The `var_bar_pts` function, based on `arc_pts`, returns a the points that `var_bar` would draw with the same arguments (except the `internal` feature). 
+
+- The `arc_pts` function returns a list of points (as tuples), that `p_arc` would draw, but does not draw them. `p_arc` now uses `arc_pts` internally.
 
 > ![](villares_arcs_and_bars/villares_arcs_and_bars2.gif)
 > 
@@ -81,7 +77,7 @@ Other functions based on `b_arc`, and a polygonal approximation called `p_arc` a
 > …
 > ```
 
-  Anoter `var_bar_pts` example using [py5](https://py5.ixora.io) *imported mode* instead of Processing Python mode [here](/var_bar_pts_py5_example)
+You can check the full Processing Python mode example at [villares_arcs_and_bars](villares_arcs_and_bars) and anoter `var_bar_pts` example using [py5](https://py5.ixora.io) *imported mode* instead at [var_bar_pts_py5_example](var_bar_pts_py5_example).
 
 ### Filleted polygons and shapes around circles
 
