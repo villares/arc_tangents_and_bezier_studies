@@ -79,7 +79,8 @@ Other functions based on `b_arc`, and a polygonal approximation called `p_arc`, 
   > You can check the full code of the Processing Python mode example above at [villares_arcs_and_bars](villares_arcs_and_bars).
 
 - A  `var_bar_pts` example using [py5](https://py5.ixora.io) *imported mode* instead at [var_bar_pts_py5_example](var_bar_pts_py5_example).
-- A  `var_bar` & `var_bar_points` example [running on the browser](https://abav.lugaralgum.com/arc_tangents_and_bezier_studies/villares_arcs_and_bars_pyp5js/) using [pyp5js](https://berinhard.github.io/pyp5js)!
+- A  `var_bar` & `var_bar_points` example [running on the browser](https://abav.lugaralgum.com/arc_tangents_and_bezier_studies/var_bar_pts_pyp5js_example/) using [pyp5js](https://berinhard.github.io/pyp5js)!
+
 ### Filleted polygons and the nice shapes that go around circles
 
 Perhaps the bigest motivation for starting the studies in this repository, next, we have some functions that povide continous poly-based shapes with tangent arcs. 
