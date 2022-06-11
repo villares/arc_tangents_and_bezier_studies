@@ -153,7 +153,7 @@ Perhaps the bigest motivation for starting the studies in this repository, next,
   > quarter_circle(x2, y2, radius, BOTTOM + RIGHT, arc_func=b_arc)
   > ```
 
-- `cricle_arc_pts` will return a list of points like the ones `p_arc` would draw.
+- `circle_arc_pts` will return a list of points like the ones `p_arc` would draw.
 
 ----
 
