@@ -83,7 +83,7 @@ Other functions based on `b_arc`, and a polygonal approximation called `p_arc`, 
 
 ### Filleted polygons and shapes around circles
 
-Perhaps the bigest motivation for staring the studies in this repository, next we have some functions that povide continous poly-based shapes with tangent arcs. 
+Perhaps the bigest motivation for starting the studies in this repository, next, we have some functions that povide continous poly-based shapes with tangent arcs. 
 
 - Rounding polygons "in", filleted polygons `arc_filleted_poly`, takes a sequence of points and radii and uses the `arc_corner`function to draw. Notice it may need to make a radius smaller to fit sometimes. A recently added `radius` keyword can be supplied instead of the radius values list.
   
