@@ -154,4 +154,5 @@ Perhaps the bigest motivation for starting the studies in this repository, next,
 
 ----
 
-Please open an issue if you have a question. [Alexandre B A Villares](https://abav.lugaralgum.com)
+Please open an issue if you have a question. Consider supporting the author at [gumroad.com/villares](https://gumroad.com/villares).
+[Alexandre B A Villares](https://abav.lugaralgum.com)
