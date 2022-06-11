@@ -42,7 +42,7 @@ def b_arc(cx, cy, w, h, start_angle, end_angle, mode=0):
           2 "naked" like normal, but without beginShape() and
              endShape() for use inside a larger PShape.
     """
-    # Based on ideas from Richard DeVeneza via code by Gola Levin:
+    # Based on ideas from Richard DeVeneza via code by Golan Levin:
     # http://www.flong.com/blog/2009/bezier-approximation-of-a-circular-arc-in-processing/
     theta = end_angle - start_angle
     # Compute raw Bezier coordinates.
