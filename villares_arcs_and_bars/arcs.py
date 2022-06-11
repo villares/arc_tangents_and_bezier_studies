@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-From https://github.com/villares/villares/blob/master/arcs.py
+From https://github.com/villares/villares/blob/main/arcs.py
 
 2020-09-22 Merges/renames several versions of the arc related functions
 2020-09-24 Updates arc_filleted_poly and arc_augmented_poly
@@ -8,11 +8,32 @@ From https://github.com/villares/villares/blob/master/arcs.py
 2020-09-26 Moved code from bar() to var_bar() and added several new kwargs
 2020-09-27 Revising arc_filleted_poly, added kwargs. Revised circle_arc and related functions
 2020-11    Improving compatibility with pyp5js, not using PVector anymore
+2021-07-26 Added auto-flip option to arc_augmented_poly
+2022-03-02 Make it work with py5
+2022-03-13 On arc_filleted_poly, add radius keyword argument to be used.
+2022-06-10 Added p_arc_pts(), var_bar_pts(). Also some p_arc and var_bar cleanup.
 """
-from warnings import warn
-from line_geometry import is_poly_self_intersecting, triangle_area
 
-DEBUG = False
+from warnings import warn
+
+try:
+    from line_geometry import is_poly_self_intersecting, triangle_area
+except ModuleNotFoundError:
+    from villares.line_geometry import is_poly_self_intersecting, triangle_area
+
+# The following block makes this compatible with py5.ixora.io
+try:
+    EPSILON
+except NameError:
+    from py5 import *
+    beginShape = begin_shape
+    endShape = end_shape
+    bezierVertex = bezier_vertex
+    textSize = text_size
+    
+DEBUG, TEXT_HEIGHT = False, 12  # For debug
+
+# For use with half_circle and quarter_circle functions
 ROTATION = {0: 0,
             BOTTOM: 0,
             DOWN: 0,
@@ -111,6 +132,10 @@ def p_circle_arc(x, y, radius, start_ang, sweep_ang, mode=0, **kwargs):
     p_arc(x, y, radius * 2, radius * 2, start_ang, start_ang + sweep_ang,
           mode=mode, **kwargs)
 
+def circle_arc_pts(x, y, radius, start_ang, sweep_ang, **kwargs):
+    p_arc_pts(x, y, radius * 2, radius * 2, start_ang, start_ang + sweep_ang,
+              **kwargs)
+
 def p_arc(cx, cy, w, h, start_angle, end_angle, mode=0,
           num_points=24, vertex_func=None):
     """
@@ -121,36 +146,36 @@ def p_arc(cx, cy, w, h, start_angle, end_angle, mode=0,
              endShape() for use inside a larger PShape.
     """
     vertex_func = vertex_func or vertex
-    sweep_angle = end_angle - start_angle
     if mode == 0:
         beginShape()
-    if sweep_angle < 0:
-        start_angle, end_angle = end_angle, start_angle
-        sweep_angle = -sweep_angle
-        angle = float(sweep_angle) / abs(num_points)
-        a = end_angle
-        while a >= start_angle:
-            sx = cx + cos(a) * w / 2.0
-            sy = cy + sin(a) * h / 2.0
-            vertex_func(sx, sy)
-            a -= angle
-    elif sweep_angle > 0:
-        angle = sweep_angle / int(num_points)
-        a = start_angle
-        while a <= end_angle:
-            sx = cx + cos(a) * w / 2.0
-            sy = cy + sin(a) * h / 2.0
-            vertex_func(sx, sy)
-            a += angle
-    else:  # sweep_angle == 0
-        sx = cx + cos(start_angle) * w / 2.0
-        sy = cy + sin(start_angle) * h / 2.0
-        vertex_func(sx, sy)
+    vertex_pts = arc_pts(cx, cy, w, h, start_angle, end_angle, num_points)
+    for vx, vy in vertex_pts:
+        vertex_func(vx, vy)
     if mode == 0:
         endShape()
 
+def arc_pts(cx, cy, w, h, start_angle, end_angle, num_points=24):
+    """
+    Returns points approximating an arc using the same
+    signature as the original Processing arc().
+    """
+    result = []
+    sweep_angle = end_angle - start_angle
+    if sweep_angle == 0:
+        vx = cx + cos(start_angle) * w / 2.0
+        vy = cy + sin(start_angle) * h / 2.0
+        return [(vx, vy)]
+    step_angle = float(sweep_angle) / num_points    
+    va = start_angle
+    side = 1 if sweep_angle > 0 else -1
+    while va * side <= end_angle * side:
+        vx = cx + cos(va) * w / 2.0
+        vy = cy + sin(va) * h / 2.0
+        result.append((vx, vy))
+        va += step_angle
+    return result
 
-def arc_filleted_poly(p_list, r_list, **kwargs):
+def arc_filleted_poly(p_list, r_list=None, **kwargs):
     """
     Draws a 'filleted' polygon with variable radius, depends on arc_corner()
 
@@ -158,30 +183,33 @@ def arc_filleted_poly(p_list, r_list, **kwargs):
     2020-09-27 Moved default args to kwargs, added kwargs support for custom arc_func
     2020-11-10 Moving vertex_func=vertex inside body to make this more compatible with pyp5js
     2020-11-11 Removing use of PVector to improve compatibility with pyp5js
+    2022-03-13 Allows a radius keyword agument to be used when no r_list is suplied
     """
-    arc_func = kwargs.pop(
-        'arc_func', b_arc)  # draws with bezier aprox. arc by default
-    # assumes a closed poly by default
-    open_poly = kwargs.pop('open_poly', False)
+    arc_func = kwargs.pop('arc_func', b_arc)  # draws with bezier aprox. arc by default
+    open_poly = kwargs.pop('open_poly', False)  # assumes a closed poly by default
+    if r_list is None:
+        r_list = [kwargs.pop('radius', 0)] * len(p_list)
 
     p_list, r_list = list(p_list), list(r_list)
     beginShape()
     if not open_poly:
-        for p0, p1, p2, r in zip(p_list,
-                                 [p_list[-1]] + p_list[:-1],
-                                 [p_list[-2]] + [p_list[-1]] + p_list[:-2],
-                                 [r_list[-1]] + r_list[:-1]
-                                 ):
+        for p0, p1, p2, r in zip(
+                p_list,
+                [p_list[-1]] + p_list[:-1],
+                [p_list[-2]] + [p_list[-1]] + p_list[:-2],
+                [r_list[-1]] + r_list[:-1]
+            ):
             m1 = ((p0[0] + p1[0]) / 2.0, (p0[1] + p1[1]) / 2.0)
             m2 = ((p2[0] + p1[0]) / 2.0, (p2[1] + p1[1]) / 2.0)
             arc_corner(p1, m1, m2, r, arc_func=arc_func, **kwargs)
         endShape(CLOSE)
     else:
-        for p0, p1, p2, r in zip(p_list[:-1],
-                                 [p_list[-1]] + p_list[:-2],
-                                 [p_list[-2]] + [p_list[-1]] + p_list[:-3],
-                                 [r_list[-1]] + r_list[:-2]
-                                 ):
+        for p0, p1, p2, r in zip(
+                p_list[:-1],
+                [p_list[-1]] + p_list[:-2],
+                [p_list[-2]] + [p_list[-1]] + p_list[:-3],
+                [r_list[-1]] + r_list[:-2]
+            ):
             m1 = ((p0[0] + p1[0]) / 2.0, (p0[1] + p1[1]) / 2.0)
             m2 = ((p2[0] + p1[0]) / 2.0, (p2[1] + p1[1]) / 2.0)
             arc_corner(p1, m1, m2, r, arc_func=arc_func, **kwargs)
@@ -194,8 +222,7 @@ def arc_corner(pc, p1, p2, r, **kwargs):
     2020-09-27 Added support for custom arc_func & kwargs
     2020-11-11 Avoiding the use of PVector
     """
-    arc_func = kwargs.pop(
-        'arc_func', b_arc)  # draws with bezier aprox. arc by default
+    arc_func = kwargs.pop('arc_func', b_arc)  # draws with bezier aprox. arc by default
 
     def proportion_point(pt, segment, L, dx, dy):
         factor = float(segment) / L if L != 0 else segment
@@ -262,11 +289,12 @@ def arc_corner(pc, p1, p2, r, **kwargs):
 def arc_augmented_poly(op_list, or_list=None, **kwargs):
     """
     Draw a continous PShape "Polyline" as if around pins of various diameters.
-    Has an ugly check_intersection mode that dows not draw and "roughly" checks
+    Has an ugly check_intersection mode that does not draw and "roughly" checks
     for self intersections using slow polygon aproximations.
     2020-09-22 Renamed from b_poly_arc_augmented 
     2020-09-24 Removed Bezier mode in favour of arc_func + any keyword arguments.
     2020-09-26 Moved arc_func to kwargs, updates exceptions
+    2021-07-26 auto-flip option (when concave vertex radius = -radius)
     """
     assert op_list, 'No points were provided.'
     if or_list == None:
@@ -276,7 +304,8 @@ def arc_augmented_poly(op_list, or_list=None, **kwargs):
     assert len(op_list) == len(r2_list),\
         'Number of points and radii provided not the same.'
     check_intersection = kwargs.pop('check_intersection', False)
-    arc_func = kwargs.pop('arc_func', None)
+    arc_func = kwargs.pop('arc_func', b_arc)
+    auto_flip = kwargs.pop('auto_flip', True)
     if check_intersection and arc_func:
         warn("check_intersection mode overrides arc_func (arc_func ignored).")
     if check_intersection:
@@ -287,7 +316,6 @@ def arc_augmented_poly(op_list, or_list=None, **kwargs):
         kwargs = {"num_points": 4, "vertex_func": vertex_func}
     else:
         vertex_func = vertex
-        arc_func = arc_func or b_arc
     # remove overlapping adjacent points
     p_list, r_list = [], []
     for i1, p1 in enumerate(op_list):
@@ -308,9 +336,10 @@ def arc_augmented_poly(op_list, or_list=None, **kwargs):
         if or_list == None:
             r_list[i1] = a
         else:
+            # # a shrink to flip option...
             # if abs(a) < 1:
             #     r_list[i1] = r_list[i1] * abs(a)
-            if a < 0:
+            if a < 0 and auto_flip:
                 r_list[i1] = -r_list[i1]
     # reduce radius that won't fit
     for i1, p1 in enumerate(p_list):
@@ -355,7 +384,7 @@ def arc_augmented_poly(op_list, or_list=None, **kwargs):
                 arc_func(p2[0], p2[1], r2 * 2, r2 * 2, start, a2, mode=2,
                          **kwargs)
             if DEBUG:
-                textSize(height / 30)
+                textSize(TEXT_HEIGHT)
                 text(str(int(degrees(start - a2))), p2[0], p2[1])
         else:
             # when the the segment is smaller than the diference between
@@ -412,15 +441,15 @@ def bar(x1, y1, x2, y2, thickness, **kwargs):
 def var_bar(p1x, p1y, p2x, p2y, r1, r2=None, **kwargs):
     """
     Tangent/tangent shape on 2 circles of arbitrary radius
-
     # 2020-9-25 Added **kwargs, now one can use arc_func=p_arc & num_points=N   
     # 2020-9-26 Added treatment to shorter=N so as to incorporate bar() use.
                 Added a keyword argument, internal=True is the default,
-                internal=False disables drawing internal circles.
+                internal=False disables drawing internal circle.
                 Minor cleanups, and removed "with" for pushMatrix().
+    # 2022-6-10 Another cleanup (gosh), changed behaviour for small distances a bit.
     """
     r2 = r2 if r2 is not None else r1
-    draw_internal_circles = kwargs.pop('internal', True)
+    draw_internal_circle = kwargs.pop('internal', True)
     arc_func = kwargs.pop('arc_func', b_arc)
     shorter = kwargs.pop('shorter', 0)
     assert not (shorter and r1 != r2),\
@@ -430,14 +459,10 @@ def var_bar(p1x, p1y, p2x, p2y, r1, r2=None, **kwargs):
     if d > abs(ri):
         clipped_ri_over_d = min(1, max(-1, ri / d))
         beta = asin(clipped_ri_over_d) + HALF_PI
-        pushMatrix()
+        push()
         translate(p1x, p1y)
         angle = atan2(p1x - p2x, p2y - p1y)
         rotate(angle + HALF_PI)
-        x1 = cos(beta) * r1
-        y1 = sin(beta) * r1
-        x2 = cos(beta) * r2
-        y2 = sin(beta) * r2
         beginShape()
         offset = shorter / 2.0 if shorter < d else d / 2.0
         arc_func(offset, 0, r1 * 2, r1 * 2,
@@ -445,7 +470,43 @@ def var_bar(p1x, p1y, p2x, p2y, r1, r2=None, **kwargs):
         arc_func(d - offset, 0, r2 * 2, r2 * 2,
                  beta - PI, PI - beta, mode=2, **kwargs)
         endShape(CLOSE)
-        popMatrix()
-    elif draw_internal_circles:
-        arc_func(p1x, p1y, r1 * 2, r1 * 2, 0, TWO_PI, **kwargs)
-        arc_func(p2x, p2y, r2 * 2, r2 * 2, 0, TWO_PI, **kwargs)
+        pop()
+    else:  # draw a circle with the bigger radius if distance is too small
+        r = max(r1, r2)
+        x, y = (p1x, p1y) if r1 > r2 else (p2x, p2y)
+        arc_func(x, y, r * 2, r * 2, 0, TWO_PI, **kwargs)
+        if draw_internal_circle:
+            r = min(r1, r2)
+            x, y = (p1x, p1y) if r1 < r2 else (p2x, p2y)
+            arc_func(x, y, r * 2, r * 2, 0, TWO_PI, **kwargs)
+
+def var_bar_pts(p1x, p1y, p2x, p2y, r1, r2=None, **kwargs):
+    """
+    Tangent/tangent shape on 2 circles of arbitrary radius
+    """
+    r2 = r2 if r2 is not None else r1
+    shorter = kwargs.pop('shorter', 0)
+    assert not (shorter and r1 != r2),\
+        "Can't draw shorter var_bar with different radii"
+    d = dist(p1x, p1y, p2x, p2y)
+    ri = r1 - r2
+    result = []
+    if d > abs(ri):
+        clipped_ri_over_d = min(1, max(-1, ri / d))
+        beta = asin(clipped_ri_over_d) + HALF_PI
+        angle = atan2(p1x - p2x, p2y - p1y) + HALF_PI
+        offset = shorter / 2.0 if shorter < d else d / 2.0
+        result.extend(arc_pts(offset, 0, r1 * 2, r1 * 2,
+                     -beta - PI, beta - PI, **kwargs))
+        result.extend(arc_pts(d - offset, 0, r2 * 2, r2 * 2,
+                      beta - PI, PI - beta, **kwargs))
+        return rotate_offset_points(result, angle, p1x, p1y)
+    else:
+        r = max(r1, r2)
+        x, y = (p1x, p1y) if r1 > r2 else (p2x, p2y)
+        return arc_pts(x, y, r * 2, r * 2, 0, TWO_PI, **kwargs)
+                          
+def rotate_offset_points(pts, angle, offx, offy, y0=0, x0=0):
+    return [(((xp - x0) * cos(angle) - (yp - y0) * sin(angle)) + x0 + offx,
+             ((yp - y0) * cos(angle) + (xp - x0) * sin(angle)) + y0 + offy)
+            for xp, yp in pts]
