@@ -41,7 +41,7 @@ Processing *PShape* insfrastructure does not contain a fuction for embeding an a
 
 Other functions based on `b_arc`, and a polygonal approximation called `p_arc`, are kept at [`arcs.py`](https://raw.githubusercontent.com/villares/villares/main/arcs.py).
 
-- The `var_bar` and `bar` functions draws "two connected circles". They can be used with `p_arc`(a polygonal approximation of an arc) instead of  the default `b_arc`. Both work in pyp5js: [demo here](https://abav.lugaralgum.com/arc_tangents_and_bezier_studies/villares_arcs_and_bars_pyp5js/)
+- The `var_bar` and `bar` functions draws "two connected circles". They can be used with `p_arc`(a polygonal approximation of an arc) instead of  the default `b_arc`. 
 
 - The `var_bar_pts` function, based on `arc_pts`, returns a the points that `var_bar` would draw with the same arguments (except the `internal` feature). 
 
@@ -76,8 +76,10 @@ Other functions based on `b_arc`, and a polygonal approximation called `p_arc`, 
   >     point(px, py)
   > …
   > ```
+  > You can check the full code of the Processing Python mode example above at [villares_arcs_and_bars](villares_arcs_and_bars).
 
-You can check the full Processing Python mode example at [villares_arcs_and_bars](villares_arcs_and_bars) and anoter `var_bar_pts` example using [py5](https://py5.ixora.io) *imported mode* instead at [var_bar_pts_py5_example](var_bar_pts_py5_example).
+- A  `var_bar_pts` example using [py5](https://py5.ixora.io) *imported mode* instead at [var_bar_pts_py5_example](var_bar_pts_py5_example).
+- A  pyp5js `var_bar` example [running on the browser](https://abav.lugaralgum.com/arc_tangents_and_bezier_studies/villares_arcs_and_bars_pyp5js/) (I have to update this to add the `var_bar_pts` that should also work).
 
 ### Filleted polygons and shapes around circles
 
