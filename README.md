@@ -4,9 +4,11 @@
 
 > from sketch-a-day project, [sketch_2020_09_26a](https://github.com/villares/sketch-a-day/tree/main/2020/sketch_2020_09_26a)
 
-This repository contains the product of my studies trying to work with arcs, bezier approximations of arcs and tangents. Most functions were made initially on Processing Python mode and now work with [py5](http://py5.ixora.io). Some will work with [pyp5js](berinhard.github.io/pyp5js/) too, and I have ported `b_arc` for Processing Java and p5js. *You are wellcome to help porting more stuff!*
+This repository contains the product of my studies trying to work with arcs, bezier approximations of arcs and tangents. Most functions were made initially on Processing Python mode and now work with [py5](http://py5.ixora.io). Some will work with [pyp5js](berinhard.github.io/pyp5js/) too, and I have ported `b_arc` for Processing Java and p5js. **You are wellcome to help porting more stuff!**
 
-I have added very little new ideas here, you can look at the findings & previous studies I moved into the `PRIOR_ART` folder. I tried to attribute stuff with links. Please note that the most recent (and maybe unstable?) version of the Python functions shown here are kept at this other repository: [github.com/villares/villares](https://github.com/villares/villares). You will probably want to get [`arcs.py`](https://github.com/villares/villares/blob/main/arcs.py) and [`line_geometry.py`](https://github.com/villares/villares/blob/main/line_geometry.py) it depends on.
+I have added very little new ideas here, you can look at the findings & previous studies I moved into the `PRIOR_ART` folder. I tried to attribute stuff with links. 
+
+Please note that the most recent (and maybe unstable?) version of the Python functions shown here are kept at this other repository: [github.com/villares/villares](https://github.com/villares/villares). You will probably want to get [`arcs.py`](https://github.com/villares/villares/blob/main/arcs.py) and [`line_geometry.py`](https://github.com/villares/villares/blob/main/line_geometry.py) it depends on.
 
 ### Bezier approximation of an arc
 
@@ -43,7 +45,7 @@ Other functions based on `b_arc`, and a polygonal approximation called `p_arc`, 
 
 - The `var_bar` and `bar` functions draw "two connected circles". They can be used with `p_arc`(a polygonal approximation of an arc) instead of the default `b_arc`. 
 
-- The `var_bar_pts` function, based on `arc_pts`, returns a the points that `var_bar` would draw with the same arguments (except the `internal` feature). 
+- The `var_bar_pts` function, based on `arc_pts`, returns the points that `var_bar` would draw with the same arguments (except the `internal` feature). 
 
 - The `arc_pts` function returns a list of points (as tuples), that `p_arc` would draw, but does not draw them. `p_arc` now uses `arc_pts` internally.
 
@@ -76,12 +78,13 @@ Other functions based on `b_arc`, and a polygonal approximation called `p_arc`, 
   >     point(px, py)
   > …
   > ```
-  > You can check the full code of the Processing Python mode example above at [villares_arcs_and_bars](villares_arcs_and_bars).
+  > The full code of the Processing Python mode example above is at [villares_arcs_and_bars](villares_arcs_and_bars).
 
-- A  `var_bar_pts` example using [py5](https://py5.ixora.io) *imported mode* instead at [var_bar_pts_py5_example](var_bar_pts_py5_example).
-- A  `var_bar` & `var_bar_points` example [running on the browser](https://abav.lugaralgum.com/arc_tangents_and_bezier_studies/var_bar_pts_pyp5js_example/) using [pyp5js](https://berinhard.github.io/pyp5js)!
+- The same interactive `var_bar` & `var_bar_pts` example above, but [running on the browser](https://abav.lugaralgum.com/arc_tangents_and_bezier_studies/var_bar_pts_pyp5js_example/) using [pyp5js](https://berinhard.github.io/pyp5js)!
 
-### Filleted polygons and the nice shapes that go around circles
+- There is a similar, simpler, interactive `var_bar_pts` example using [py5](https://py5.ixora.io) *imported mode* at [var_bar_pts_py5_example](var_bar_pts_py5_example).
+
+### Filleted polygons and nice shapes that can wrap circles
 
 Perhaps the bigest motivation for starting the studies in this repository, next, we have some functions that povide continous poly-based shapes with tangent arcs. 
 
@@ -125,7 +128,7 @@ Perhaps the bigest motivation for starting the studies in this repository, next,
   > arc_augmented_poly(p_list,r_list)  # arc_func=b_arc by default
   > ```
   
-  - Have to document an "ugly" feature of `arc_augmented_poly` that checks for self intersections calculating a polygonal approximation, without drawing the shapes.
+  - `TO DO:` I should document an "ugly" feature of `arc_augmented_poly` that checks for self intersections calculating a polygonal approximation, without drawing the shapes.
   
   ### A few other silly arc helpers
 
@@ -154,5 +157,4 @@ Perhaps the bigest motivation for starting the studies in this repository, next,
 
 ----
 
-Please open an issue if you have a question. Consider supporting the author at [gumroad.com/villares](https://gumroad.com/villares).
-[Alexandre B A Villares](https://abav.lugaralgum.com)
+Please open an issue if you have a question. Consider supporting the author, [Alexandre B A Villares](https://abav.lugaralgum.com), at [gumroad.com/villares](https://gumroad.com/villares).
