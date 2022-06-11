@@ -1,5 +1,8 @@
 """
-Demo for bar and var_bar
+Demo for var_bar, bar and var_bar_pts
+
+var_bar can use b_arc (default) or p_arc (poly approximation internally based on arc_pts now)
+var_bar_pts uses arc_pts
 """
 
 from arcs import bar, var_bar, p_arc, var_bar_pts
@@ -14,10 +17,10 @@ def draw():
     fill(0)
     text("press any key to see p_arc polygonal aprox. and var_bar_pts", 20, 20)
     fill(0, 0, 200, 100)
+    strokeWeight(1)
     line(50, 50, 350, 250)
     if mode == 0:
-        # By default arc_func=b_arc
-        var_bar(50, 160, 350, 310, 40, 0)
+        var_bar(50, 160, 350, 310, 40, 0) # by default arc_func=b_arc
         bar(50, 50, 350, 250, thickness=60, shorter=mouseX)
         var_bar(50, 250, 50 + mouseX * .7, 250 + mouseX * .25, 20, 40)
     elif mode == 1:   
@@ -31,11 +34,9 @@ def draw():
         pts2 = var_bar_pts(50, 50, 350, 250, 30, 30, shorter=mouseX, num_points=3)
         pts3 = var_bar_pts(50, 250, 50 + mouseX / 2, 250 + mouseX * .20, 20, 40,
                 num_points=8)
-        push()
         strokeWeight(5)
         for px, py in pts1 + pts2 + pts3:
             point(px, py)
-        pop()
         
 def keyPressed():
     global mode
