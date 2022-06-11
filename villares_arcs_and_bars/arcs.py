@@ -11,7 +11,7 @@ From https://github.com/villares/villares/blob/main/arcs.py
 2021-07-26 Added auto-flip option to arc_augmented_poly
 2022-03-02 Make it work with py5
 2022-03-13 On arc_filleted_poly, add radius keyword argument to be used.
-2022-06-10 Added p_arc_pts(), var_bar_pts(). Also some p_arc and var_bar cleanup.
+2022-06-10 Added p_arc_pts() & var_bar_pts(). Also some p_arc and var_bar clean up.
 """
 
 from warnings import warn
@@ -74,7 +74,7 @@ def b_arc(cx, cy, w, h, start_angle, end_angle, mode=0):
           2 "naked" like normal, but without beginShape() and
              endShape() for use inside a larger PShape.
     """
-    # Based on ideas from Richard DeVeneza via code by Gola Levin:
+    # Based on ideas from Richard DeVeneza via code by Golan Levin:
     # http://www.flong.com/blog/2009/bezier-approximation-of-a-circular-arc-in-processing/
     theta = end_angle - start_angle
     # Compute raw Bezier coordinates.
@@ -141,7 +141,8 @@ def p_arc(cx, cy, w, h, start_angle, end_angle, mode=0,
     """
     A poly approximation of an arc using the same
     signature as the original Processing arc().
-    mode: 0 "normal" arc, using beginShape() and endShape()
+    mode: 0 "normal" arc-like, using beginShape() and endShape()
+          1 "middle" not implemented on p_arc, used on recursive b_arc 
           2 "naked" like normal, but without beginShape() and
              endShape() for use inside a larger PShape.
     """
@@ -159,21 +160,21 @@ def arc_pts(cx, cy, w, h, start_angle, end_angle, num_points=24):
     Returns points approximating an arc using the same
     signature as the original Processing arc().
     """
-    result = []
     sweep_angle = end_angle - start_angle
-    if sweep_angle == 0:
+    if sweep_angle < 0.0001:
         vx = cx + cos(start_angle) * w / 2.0
         vy = cy + sin(start_angle) * h / 2.0
         return [(vx, vy)]
+    pts_list = []
     step_angle = float(sweep_angle) / num_points    
     va = start_angle
     side = 1 if sweep_angle > 0 else -1
-    while va * side <= end_angle * side:
+    while va * side < end_angle * side or abs(va - end_angle) < 0.0001:
         vx = cx + cos(va) * w / 2.0
         vy = cy + sin(va) * h / 2.0
-        result.append((vx, vy))
+        pts_list.append((vx, vy))
         va += step_angle
-    return result
+    return pts_list
 
 def arc_filleted_poly(p_list, r_list=None, **kwargs):
     """
@@ -183,7 +184,7 @@ def arc_filleted_poly(p_list, r_list=None, **kwargs):
     2020-09-27 Moved default args to kwargs, added kwargs support for custom arc_func
     2020-11-10 Moving vertex_func=vertex inside body to make this more compatible with pyp5js
     2020-11-11 Removing use of PVector to improve compatibility with pyp5js
-    2022-03-13 Allows a radius keyword agument to be used when no r_list is suplied
+    2022-03-13 Allows a radius keyword argument to be used when no r_list is suplied
     """
     arc_func = kwargs.pop('arc_func', b_arc)  # draws with bezier aprox. arc by default
     open_poly = kwargs.pop('open_poly', False)  # assumes a closed poly by default
@@ -441,19 +442,30 @@ def bar(x1, y1, x2, y2, thickness, **kwargs):
 def var_bar(p1x, p1y, p2x, p2y, r1, r2=None, **kwargs):
     """
     Tangent/tangent shape on 2 circles of arbitrary radius
+    
+    Expected keyword arguments:
+        shorter: Will draw a shorter "bar" (only if r1 == r2)
+        internal: When too short draws circle from smaller radius end
+                  inside circle from larger radius end (default is  True)
+        arc_func: Allows choosing the arc funcio, like p_arc (default is b_arc)
+        num_points: Will be passed to the arc_func (works with p_arc)
+    
     # 2020-9-25 Added **kwargs, now one can use arc_func=p_arc & num_points=N   
     # 2020-9-26 Added treatment to shorter=N so as to incorporate bar() use.
                 Added a keyword argument, internal=True is the default,
                 internal=False disables drawing internal circle.
                 Minor cleanups, and removed "with" for pushMatrix().
-    # 2022-6-10 Another cleanup (gosh), changed behaviour for small distances a bit.
+    # 2022-6-10 Removed unused variables & changed behaviour for small distances,
+                when internal=False, draw a circle from the larger radius.
     """
     r2 = r2 if r2 is not None else r1
     draw_internal_circle = kwargs.pop('internal', True)
     arc_func = kwargs.pop('arc_func', b_arc)
     shorter = kwargs.pop('shorter', 0)
     assert not (shorter and r1 != r2),\
-        "Can't draw shorter var_bar with different radii"
+        "Can't draw shorter var_bar with different radii. r1={} r2={}".format(r1, r2)
+    assert not (kwargs and arc_func == b_arc),\
+        "Can't use keyword arguments with b_arc. {}".format(kwargs)
     d = dist(p1x, p1y, p2x, p2y)
     ri = r1 - r2
     if d > abs(ri):
@@ -483,6 +495,11 @@ def var_bar(p1x, p1y, p2x, p2y, r1, r2=None, **kwargs):
 def var_bar_pts(p1x, p1y, p2x, p2y, r1, r2=None, **kwargs):
     """
     Tangent/tangent shape on 2 circles of arbitrary radius
+    
+    Expected keyword arguments:
+        shorter: will make a shorter "bar" (only if r1 == r2)
+        num_points: will be passed to p_arc_pts (default there is 24)
+        internal: unavailable
     """
     r2 = r2 if r2 is not None else r1
     shorter = kwargs.pop('shorter', 0)
