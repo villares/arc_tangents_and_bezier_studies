@@ -4,9 +4,9 @@
 
 > from sketch-a-day project, [sketch_2020_09_26a](https://github.com/villares/sketch-a-day/tree/main/2020/sketch_2020_09_26a)
 
-This repository contains the product of my studies trying to work with arcs, bezier approximations of arcs, most functions were made initially on Processing Python mode, and now work with [py5](http://py5. ixora.io). Some will work with [pyp5js](berinhard.github.io/pyp5js/) too, and I have ported `b_arc` for Processing Java and p5js. 
+This repository contains the product of my studies trying to work with arcs, bezier approximations of arcs and tangents. Most functions were made initially on Processing Python mode and now work with [py5](http://py5. ixora.io). Some will work with [pyp5js](berinhard.github.io/pyp5js/) too, and I have ported `b_arc` for Processing Java and p5js. *You are wellcome to help porting more stuff!*
 
-I have added very little new ideas here, most of my findings & previous studies were moved into the `PRIOR_ART` folder, I tried to attribute stuff with links. Please note that the most recent (and maybe unstable?) version of the Python functions shown here are kept at this other repository: [github.com/villares/villares](https://github.com/villares/villares). You will probably want to get [`arcs.py`](https://github.com/villares/villares/blob/main/arcs.py) and [`line_geometry.py`](https://github.com/villares/villares/blob/main/line_geometry.py) it depends on.
+I have added very little new ideas here, you can look at the findings & previous studies I moved into the `PRIOR_ART` folder. I tried to attribute stuff with links. Please note that the most recent (and maybe unstable?) version of the Python functions shown here are kept at this other repository: [github.com/villares/villares](https://github.com/villares/villares). You will probably want to get [`arcs.py`](https://github.com/villares/villares/blob/main/arcs.py) and [`line_geometry.py`](https://github.com/villares/villares/blob/main/line_geometry.py) it depends on.
 
 ### Bezier approximation of an arc
 
@@ -37,7 +37,7 @@ Processing *PShape* insfrastructure does not contain a fuction for embeding an a
   > endShape(CLOSE)
   > ```
 
-### More arcs and tangents
+### More arcs and the first tangents
 
 Other functions based on `b_arc`, and a polygonal approximation called `p_arc`, are kept at [`arcs.py`](https://raw.githubusercontent.com/villares/villares/main/arcs.py).
 
@@ -81,7 +81,7 @@ Other functions based on `b_arc`, and a polygonal approximation called `p_arc`, 
 - A  `var_bar_pts` example using [py5](https://py5.ixora.io) *imported mode* instead at [var_bar_pts_py5_example](var_bar_pts_py5_example).
 - A  pyp5js `var_bar` example [running on the browser](https://abav.lugaralgum.com/arc_tangents_and_bezier_studies/villares_arcs_and_bars_pyp5js/) (I have to update this to add the `var_bar_pts` that should also work).
 
-### Filleted polygons and shapes around circles
+### Filleted polygons and the nice shapes that go around circles
 
 Perhaps the bigest motivation for starting the studies in this repository, next, we have some functions that povide continous poly-based shapes with tangent arcs. 
 
@@ -127,11 +127,10 @@ Perhaps the bigest motivation for starting the studies in this repository, next,
   
   - Have to document an "ugly" feature of `arc_augmented_poly` that checks for self intersections calculating a polygonal approximation, without drawing the shapes.
   
-  ### A few other arc helpers
+  ### A few other silly arc helpers
 
-- The `circle_arc` function tries to create a simpler interface for Processing's `arc`, asking for *x*, *y*, *radius*, *start_angle*, and *sweep* (*radius* instead of *width*, *height* and *sweep* instead of *end_angle*). It also allows drawing with `b_arc` or `p_arc`. The `half_circle` and `quarter_circle` are similar, very silly `arc` (or `b_arc`/`p_arc`) wrappers using a mix of Processing constants to define rotation.
-
-- `cricle_arc_pts` will return a list of points like the ones `p_arc` would draw.
+- The `circle_arc` function tries to create a simpler interface for Processing's `arc`, asking for *x*, *y*, *radius*, *start_angle*, and *sweep* (*radius* instead of *width*, *height* and *sweep* instead of *end_angle*). It also allows drawing with `b_arc` or `p_arc`.
+- The `half_circle` and `quarter_circle` are similar, very silly `arc` (or `b_arc`/`p_arc`) wrappers using a mix of Processing constants to define rotation.
   
   > ![circle_arc](villares_bezier_arc_aproximation/circle_arc.png)
   > 
@@ -150,3 +149,9 @@ Perhaps the bigest motivation for starting the studies in this repository, next,
   > quarter_circle(x2, y1, radius, TOP + RIGHT)
   > quarter_circle(x2, y2, radius, BOTTOM + RIGHT, arc_func=b_arc)
   > ```
+
+- `cricle_arc_pts` will return a list of points like the ones `p_arc` would draw.
+
+----
+
+Please open an issue if you have a question. [Alexandre B A Villares](https://abav.lugaralgum.com)
