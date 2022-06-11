@@ -3,12 +3,13 @@
 ![sketch_2020_09_26a](https://raw.githubusercontent.com/villares/sketch-a-day/master/2020/sketch_2020_09_26a/sketch_2020_09_26a.gif)
 > from sketch-a-day project, [sketch_2020_09_26a](https://github.com/villares/sketch-a-day/tree/master/2020/sketch_2020_09_26a)
 
-I have added very little new ideas here, most of my findings & previous studies were moved into the `PRIOR_ART` folder, I tried to attribute stuff with links. Please note that the most recent (and maybe unstable?) version of the Python functions shown here are kept at this other repository: [github.com/villares/villares](https://raw.githubusercontent.com/villares/villares/master/arcs.py). You will probably want to get [`arcs.py`](https://raw.githubusercontent.com/villares/villares/master/arcs.py) and [`line_geometry.py`](https://raw.githubusercontent.com/villares/villares/master/line_geometry.py) it depends on.
+These repository contains the product of my studies trying to work with arcs, bezier approximations of arcs, with Processing Java, p5js, but mostly with Processing Python mode and py5 (http://py5.ixora.io).
 
+I have added very little new ideas here, most of my findings & previous studies were moved into the `PRIOR_ART` folder, I tried to attribute stuff with links. Please note that the most recent (and maybe unstable?) version of the Python functions shown here are kept at this other repository: [github.com/villares/villares](https://raw.githubusercontent.com/villares/villares/master/arcs.py). You will probably want to get [`arcs.py`](https://raw.githubusercontent.com/villares/villares/master/arcs.py) and [`line_geometry.py`](https://raw.githubusercontent.com/villares/villares/master/line_geometry.py) it depends on.
 
 ### Bezier approximation of an arc
 
-The `b_arc` function can be used inside `beginShape()`/`endShape()` as a kind of "arcVertex" (which doesn't exist). It follows mostly the Processing `arc` signature, but does not include PIE and CHORD modes. You can find demos at:
+Processing *PShape* insfrastructure does not contain a fuction for embeding an arc in a larger polyline shape. The `b_arc` function provided here can be used inside `beginShape()`/`endShape()` as a kind of "arcVertex" (which doesn't exist). It follows mostly the Processing `arc` signature, but does not include PIE and CHORD modes. You can find demos at:
 
   - [`b_arc`](/villares_bezier_arc_aproximation/villares_bezier_arc_aproximation.pyde) Processing Python mode (also works with [pyp5js](berinhard.github.io/pyp5js) and [py5](http://py5.pixora.io))
   - [`b_arc`](/villares_bezier_arc_aproximation_java/villares_bezier_arc_aproximation_java.pde) Processing Java 
@@ -34,7 +35,7 @@ The `b_arc` function can be used inside `beginShape()`/`endShape()` as a kind of
 
 ### More arcs and tangents
 
-More stuff based on `b_arc`, code kept at [`arcs.py`](https://raw.githubusercontent.com/villares/villares/master/arcs.py). It gets some functions from [`line_geometry.py(https://raw.githubusercontent.com/villares/villares/master/line_geometry.py)). Most functions can also be used with `p_arc`(a polygonal approximation of an arc). Except were noted, mostly Processing Python mode functions, as I have not yet ported them to other languages. *Feel free to contribute porting stuff!*
+More stuff based on `b_arc`, code kept at [`arcs.py`](https://raw.githubusercontent.com/villares/villares/master/arcs.py), that gets some functions from [`line_geometry.py`](https://raw.githubusercontent.com/villares/villares/master/line_geometry.py)). Most functions can also be used with `p_arc`(a polygonal approximation of an arc). Except were noted, mostly Processing Python mode functions, as I have not yet ported them to other languages. *Feel free to contribute porting stuff!*
 
 - The `bar` and `var_bar` functions draws "two connected circles" (both work in pyp5js, [demo here](https://abav.lugaralgum.com/arc_tangents_and_bezier_studies/villares_arcs_and_bars_pyp5js/)!)
 
@@ -53,6 +54,13 @@ More stuff based on `b_arc`, code kept at [`arcs.py`](https://raw.githubusercont
     >     var_bar(50, 250, 50 + mouseX / 2, 250 + mouseX * .20, 20, 40,
     >             arc_func=p_arc, num_points=8)
     > ```
+
+- `p_arc_pts` returns the list of points (as tuples), thar `p_arc` would draw, but does not draw them.
+
+- `var_bar_pts`, based on `p_arc_pts`, returns a the points that `var_bar` would draw with the same arguments (except the `internal` feature)
+
+   > ![sketch_2022_06_10](https://user-images.githubusercontent.com/3694604/173167674-bc1f7c79-6b4c-4cea-abe0-eb2cb552806d.gif)
+   > Note the example above is using [py5](https://py5.ixora.io) *imported mode* instead of Processing Python mode, but these functions will work with both.
 
 - Rounding polygons "in", filleted polygons `arc_filleted_poly`, takes a sequence of points and radii and uses the `arc_corner`function to draw. Notice it may need to make a radius smaller to fit sometimes. A recently added `radius` keyword can be supplied instead of the radius values list.
 
