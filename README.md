@@ -4,7 +4,7 @@
 
 > from sketch-a-day project, [sketch_2020_09_26a](https://github.com/villares/sketch-a-day/tree/main/2020/sketch_2020_09_26a)
 
-This repository contains the product of my studies trying to work with arcs, bezier approximations of arcs and tangents. Most functions were made initially on Processing Python mode and now work with [py5](http://py5.ixora.io). Some will work with [pyp5js](berinhard.github.io/pyp5js/) too, and I have ported `b_arc` for Processing Java and p5js. **You are wellcome to help porting more stuff!**
+This repository contains the product of my studies trying to work with arcs, bezier approximations of arcs and tangents. Most functions were made initially on Processing Python mode and now work with [py5](http://py5coding.org). Some will work with [pyp5js](berinhard.github.io/pyp5js/) too, and I have ported `b_arc` for Processing Java and p5js. **You are wellcome to help porting more stuff!**
 
 I have added very little new ideas here, you can look at the findings & previous studies I moved into the `PRIOR_ART` folder. I tried to attribute stuff with links. 
 
@@ -82,7 +82,7 @@ Other functions based on `b_arc`, and a polygonal approximation called `p_arc`, 
 
 - The same interactive `var_bar` & `var_bar_pts` example above, but [running on the browser](https://abav.lugaralgum.com/arc_tangents_and_bezier_studies/var_bar_pts_pyp5js_example/) using [pyp5js](https://berinhard.github.io/pyp5js)!
 
-- There is a similar, simpler, interactive `var_bar_pts` example using [py5](https://py5.ixora.io) *imported mode* at [var_bar_pts_py5_example](var_bar_pts_py5_example).
+- There is a similar, simpler, interactive `var_bar_pts` example using [py5](https://py5coding.org) *imported mode* at [var_bar_pts_py5_example](var_bar_pts_py5_example).
 
 ### Filleted polygons and nice shapes that can wrap circles
 
