@@ -49,7 +49,7 @@ Other functions based on `b_arc`, and a polygonal approximation called `p_arc`, 
 
 - The `arc_pts` function returns a list of points (as tuples), that `p_arc` would draw, but does not draw them. `p_arc` now uses `arc_pts` internally.
 
-  > ![](villares_arcs_and_bars/villares_arcs_and_bars2.gif)
+  > ![](https://raw.githubusercontent.com/villares/arc_tangents_and_bezier_studies/main/villares_arcs_and_bars/villares_arcs_and_bars2.gif)
   > 
   > ```python
   > …
@@ -90,7 +90,7 @@ Perhaps the bigest motivation for starting the studies in this repository, next,
 
 - Rounding polygons "in", filleted polygons `arc_filleted_poly`, takes a sequence of points and radii and uses the `arc_corner`function to draw. Notice it may need to make a radius smaller to fit sometimes. A recently added `radius` keyword can be supplied instead of the radius values list.
   
-  > ![](villares_filleted_and_arc_augmented_polys/arc_filleted_poly.png)
+  > ![](https://raw.githubusercontent.com/villares/arc_tangents_and_bezier_studies/main/villares_filleted_and_arc_augmented_polys/arc_filleted_poly.png)
   > 
   > ```python
   > p_list = [(30, 160), (250, 50), (350, 150), (200, 100)]
@@ -110,7 +110,7 @@ Perhaps the bigest motivation for starting the studies in this repository, next,
 
 - Rounding polygons "outside" with `arc_augmented_poly`, takes a sequence of points and radii and calculates geometry with the `circ_circ_tangent` function. If two points are too close it will reduce the radii.
   
-  > ![](villares_filleted_and_arc_augmented_polys/arc_augmented_poly.png)
+  > ![](https://raw.githubusercontent.com/villares/arc_tangents_and_bezier_studies/main/villares_filleted_and_arc_augmented_polys/arc_augmented_poly.png)
   > 
   > ```python
   > p_list = [(30, 160), (250, 50), (350, 150), (200, 100)]
@@ -119,7 +119,7 @@ Perhaps the bigest motivation for starting the studies in this repository, next,
   > arc_augmented_poly(p_list,r_list)  # arc_func=b_arc by default
   > ```
   > 
-  > ![](villares_filleted_and_arc_augmented_polys/arc_augmented_poly.gif)
+  > ![](https://raw.githubusercontent.com/villares/arc_tangents_and_bezier_studies/main/villares_filleted_and_arc_augmented_polys/arc_augmented_poly.gif)
   > 
   > ```python
   > p_list = [(30, 160), (250, 50), (350, 150), (mouseX, mouseY)]
@@ -135,7 +135,7 @@ Perhaps the bigest motivation for starting the studies in this repository, next,
 - The `circle_arc` function tries to create a simpler interface for Processing's `arc`, asking for *x*, *y*, *radius*, *start_angle*, and *sweep* (*radius* instead of *width*, *height* and *sweep* instead of *end_angle*). It also allows drawing with `b_arc` or `p_arc`.
 - The `half_circle` and `quarter_circle` are similar, very silly `arc` (or `b_arc`/`p_arc`) wrappers using a mix of Processing constants to define rotation.
   
-  > ![circle_arc](villares_bezier_arc_aproximation/circle_arc.png)
+  > ![circle_arc](https://raw.githubusercontent.com/villares/arc_tangents_and_bezier_studies/main/villares_bezier_arc_aproximation/circle_arc.png)
   > 
   > ```python
   > x, y, radius, start_angle, sweep = 75, 105, 50, 0, PI + QUARTER_PI
