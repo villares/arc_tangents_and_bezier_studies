@@ -1,3 +1,4 @@
+
 # -*- coding: utf-8 -*-
 """
 From https://github.com/villares/villares/blob/main/arcs.py
@@ -12,7 +13,13 @@ From https://github.com/villares/villares/blob/main/arcs.py
 2022-03-02 Make it work with py5
 2022-03-13 On arc_filleted_poly, add radius keyword argument to be used.
 2022-06-10 Added arc_pts() & var_bar_pts(). Also some p_arc and var_bar clean up.
-2022-06-11 Fixing arc_pts bug. Attempt at making arc_filleted_poly return points with arc_pts
+2022-06-11 Fixing arc_pts bug. Making arc_filleted_poly return points with arc_pts
+           Added a radius keywarg to arc_augmented_poly, and a py5 compatibilty fix.
+2022_06_13 Attempt at arc_augmented_points(), changing some behaviour of arc_augmente_poly()
+2022_07_03 Adding alternative resolution control to arc_pts (@introscopia's suggestion)
+           In arc_augmented_poly & points: Fixing/changing the no radius list and no radius kwarg
+           (now it means radius=0) and WIP still struggling with flipping and radius reduction behavior 
+2023_08_05 WIP py5 vertices optimization and some other refactoring
 """
 
 from warnings import warn
@@ -25,13 +32,17 @@ except ModuleNotFoundError:
 # The following block makes this compatible with py5coding.org
 try:
     EPSILON
+    remap = map
+    def vertices(pts):
+        for p in pts:
+            vertex(*p)
 except NameError:
     from py5 import *
     beginShape = begin_shape
     endShape = end_shape
     bezierVertex = bezier_vertex
     textSize = text_size
-    
+
 DEBUG, TEXT_HEIGHT = False, 12  # For debug
 
 # For use with half_circle and quarter_circle functions
@@ -147,16 +158,18 @@ def p_arc(cx, cy, w, h, start_angle, end_angle, mode=0,
           2 "naked" like normal, but without beginShape() and
              endShape() for use inside a larger PShape.
     """
-    vertex_func = vertex_func or vertex
     if mode == 0:
         beginShape()
     vertex_pts = arc_pts(cx, cy, w, h, start_angle, end_angle, num_points)
-    for vx, vy in vertex_pts:
-        vertex_func(vx, vy)
+    if vertex_func is None or vertex_fun == vertex:
+        vertices(vertex_pts)
+    else:
+        for vx, vy in vertex_pts:
+            vertex_func(vx, vy)
     if mode == 0:
         endShape()
 
-def arc_pts(cx, cy, w, h, start_angle, end_angle, num_points=24):
+def arc_pts(cx, cy, w, h, start_angle, end_angle, num_points=None, seg_len=None):
     """
     Returns points approximating an arc using the same
     signature as the original Processing arc().
@@ -166,6 +179,10 @@ def arc_pts(cx, cy, w, h, start_angle, end_angle, num_points=24):
         vx = cx + cos(start_angle) * w / 2.0
         vy = cy + sin(start_angle) * h / 2.0
         return [(vx, vy)]
+    if num_points is None and seg_len is None:
+        num_points = 24
+    elif num_points is None:
+        num_points = abs(sweep_angle * (w + h) / 4) / seg_len
     pts_list = []
     step_angle = float(sweep_angle) / num_points    
     va = start_angle
@@ -186,42 +203,53 @@ def arc_filleted_poly(p_list, r_list=None, **kwargs):
     2020-11-10 Moving vertex_func=vertex inside body to make this more compatible with pyp5js
     2020-11-11 Removing use of PVector to improve compatibility with pyp5js
     2022-03-13 Allows a radius keyword argument to be used when no r_list is suplied
-    2022-06-11 Refactoring and preparing a non-drawing version.
+    2022-06-11 Refactoring and added arc_pts non-drawing feature that returns points.
     """
     arc_func = kwargs.pop('arc_func', b_arc)  # draws with bezier aprox. arc by default
     open_poly = kwargs.pop('open_poly', False)  # assumes a closed poly by default
+    assert p_list, 'No points were provided.'
+    assert not ('radius' in kwargs and r_list),\
+           "You can't use a radii list and a radius kwarg together."
     if r_list is None:
         r_list = [kwargs.pop('radius', 0)] * len(p_list)
     p_list, r_list = list(p_list), list(r_list)
-    draw_shape = True if arc_func != arc_pts else False
+    draw_shape = False if arc_func == arc_pts else True
+    
     def mid(p0, p1):
         return (p0[0] + p1[0]) * 0.5, (p0[1] + p1[1]) * 0.5
     
     if open_poly:
-        p0_p1_p2_r_sequence = zip(p_list[:-1],
-            [p_list[-1]] + p_list[:-2],
-            [p_list[-2]] + [p_list[-1]] + p_list[:-3],
-            [r_list[-1]] + r_list[:-2])
+        p_list = p_list[1:] + [p_list[0]]
+        p0_p1_p2_r_sequence = list(zip(p_list,
+            [p_list[-1]] + p_list[:-1],
+            [p_list[-2]] + [p_list[-1]] + p_list[:-2],
+            [r_list[-1]] + r_list[:-1]))
     else:
         p0_p1_p2_r_sequence = zip(p_list,
             [p_list[-1]] + p_list[:-1],
             [p_list[-2]] + [p_list[-1]] + p_list[:-2],
             [r_list[-1]] + r_list[:-1])
-    if draw_shape:
-        beginShape()
-        for p0, p1, p2, r in p0_p1_p2_r_sequence:
-            arc_corner(p1, mid(p0, p1), mid(p1, p2), r,
-                       arc_func=arc_func, **kwargs)
-    else:
+    if not draw_shape:
         pts_list = []
         for p0, p1, p2, r in p0_p1_p2_r_sequence:
             pts_list.extend(arc_corner(p1, mid(p0, p1), mid(p1, p2), r,
                                        arc_func=arc_func, **kwargs))
         return pts_list
-    # if draw shape:
+    # else, if draw_shape:
+    beginShape()
     if open_poly:
+        p0, first, p2, r = p0_p1_p2_r_sequence[0]
+        vertex(*first)
+        for p0, p1, p2, r in p0_p1_p2_r_sequence[1:-1]:
+            arc_corner(p1, mid(p0, p1), mid(p1, p2), r,
+                    arc_func=arc_func, **kwargs)
+        p0, last, p2, r = p0_p1_p2_r_sequence[-1]
+        vertex(*last)
         endShape()       
-    else:
+    else:    
+        for p0, p1, p2, r in p0_p1_p2_r_sequence:
+            arc_corner(p1, mid(p0, p1), mid(p1, p2), r,
+                    arc_func=arc_func, **kwargs)
         endShape(CLOSE)
 
 def arc_corner(pc, p1, p2, r, **kwargs):
@@ -236,7 +264,7 @@ def arc_corner(pc, p1, p2, r, **kwargs):
 
     def proportion_point(pt, segment, L, dx, dy):
         factor = float(segment) / L if L != 0 else segment
-        return((pt[0] - dx * factor), (pt[1] - dy * factor))
+        return (pt[0] - dx * factor), (pt[1] - dy * factor)
 
     # Vectors 1 and 2
     dx1, dy1 = pc[0] - p1[0], pc[1] - p1[1]
@@ -292,7 +320,7 @@ def arc_corner(pc, p1, p2, r, **kwargs):
         start_angle, end_angle = end_angle, start_angle
         sweep_angle = -sweep_angle
     if arc_func == arc_pts:
-        return arc_func(arc_center[0], arc_center[1], 2 * max_r, 2 * max_r,
+        return arc_pts(arc_center[0], arc_center[1], 2 * max_r, 2 * max_r,
                         start_angle, start_angle + sweep_angle, **kwargs)
     # else, draw "naked" arc (without beginShape & endShape)
     arc_func(arc_center[0], arc_center[1], 2 * max_r, 2 * max_r,
@@ -307,18 +335,27 @@ def arc_augmented_poly(op_list, or_list=None, **kwargs):
     2020-09-22 Renamed from b_poly_arc_augmented 
     2020-09-24 Removed Bezier mode in favour of arc_func + any keyword arguments.
     2020-09-26 Moved arc_func to kwargs, updates exceptions
-    2021-07-26 auto-flip option (when concave vertex radius = -radius)
+    2021-07-26 Added auto-flip switch/option (when concave vertex radius = -radius)
+    2022-06-11 Added remap py5 compatibility alias & radius kwarg for or_list=None
+    2022-06-14 Connected to arc_augmented_points. Added reduce_both kwarg.
     """
+    arc_func = kwargs.pop('arc_func', b_arc)
+    if arc_func == arc_pts:
+        return arc_augmented_points(op_list, or_list, **kwargs)
+    
     assert op_list, 'No points were provided.'
-    if or_list == None:
-        r2_list = [0] * len(op_list)
-    else:
-        r2_list = or_list[:]
+    assert not ('radius' in kwargs and or_list),\
+           "You can't use a radii list and a radius kwarg together."
+    if or_list is None:
+        or_list = [kwargs.pop('radius', 0)] * len(op_list)
+    r2_list = list(or_list)
     assert len(op_list) == len(r2_list),\
         'Number of points and radii provided not the same.'
     check_intersection = kwargs.pop('check_intersection', False)
-    arc_func = kwargs.pop('arc_func', b_arc)
+
     auto_flip = kwargs.pop('auto_flip', True)
+    gradual_flip = kwargs.pop('gradual_flip', False)
+    reduce_both = kwargs.pop('reduce_both', True)
     if check_intersection and arc_func:
         warn("check_intersection mode overrides arc_func (arc_func ignored).")
     if check_intersection:
@@ -345,20 +382,17 @@ def arc_augmented_poly(op_list, or_list=None, **kwargs):
         p0 = p_list[i0]
         i2 = (i1 + 1) % len(p_list)
         p2 = p_list[i2]
-        a = triangle_area(p0, p1, p2) / 1000.
-        if or_list == None:
-            r_list[i1] = a
-        else:
-            # # a shrink to flip option...
-            # if abs(a) < 1:
-            #     r_list[i1] = r_list[i1] * abs(a)
-            if a < 0 and auto_flip:
-                r_list[i1] = -r_list[i1]
+        a = triangle_area(p0, p1, p2) / 1000.0
+        if auto_flip and a < 0:
+            r_list[i1] = -r_list[i1]
+            if gradual_flip:
+                r_list[i1] = r_list[i1] * min(1, abs(a))
     # reduce radius that won't fit
     for i1, p1 in enumerate(p_list):
         i2 = (i1 + 1) % len(p_list)
         p2, r2, r1 = p_list[i2], r_list[i2], r_list[i1]
-        r_list[i1], r_list[i2] = reduce_radius(p1, p2, r1, r2)
+        r_list[i1], r_list[i2] = reduce_radius(p1, p2, r1, r2,
+                                               reduce_both=reduce_both)
     # calculate the tangents
     a_list = []
     for i1, p1 in enumerate(p_list):
@@ -413,15 +447,110 @@ def arc_augmented_poly(op_list, or_list=None, **kwargs):
     if check_intersection:
         return is_poly_self_intersecting(_points)
 
-def reduce_radius(p1, p2, r1, r2):
+def arc_augmented_points(op_list, or_list=None, **kwargs):
+    """
+    A version of arc_augmented_poly that returns the points
+    of a poly-approximation with arc_pts
+    """
+    
+    def mid(p0, p1):
+        return (p0[0] + p1[0]) * 0.5, (p0[1] + p1[1]) * 0.5
+    
+    assert op_list, 'No points were provided.'
+    assert not ('radius' in kwargs and or_list),\
+        "You can't use a radii list and a radius kwarg together."
+    if or_list is None:
+        or_list = [kwargs.pop('radius', 0)] * len(op_list)
+    r2_list = list(or_list)
+    assert len(op_list) == len(r2_list),\
+        'Number of points and radii provided not the same.'
+    auto_flip = kwargs.pop('auto_flip', True)
+    gradual_flip = kwargs.pop('gradual_flip', False) 
+    reduce_both = kwargs.pop('reduce_both', True)
+    pts_list = []
+    # remove overlapping adjacent points
+    p_list, r_list = [], []
+    p2_list = list(op_list)
+    for i1, p1 in enumerate(p2_list):
+        i2 = (i1 + 1) % len(p2_list)
+        p2, r2, r1 = p2_list[i2], r2_list[i2], r2_list[i1]
+        d = dist(p1[0], p1[1], p2[0], p2[1])
+        if d > abs(r1 - r2):
+            p_list.append(p1)
+            r_list.append(r1)
+        else:
+            p2_list[i2] = mid(p1, p2)
+            r2_list[i2] = max(r1, r2)
+    # invert radius
+    for i1, p1 in enumerate(p_list):
+        i0 = (i1 - 1)
+        p0 = p_list[i0]
+        i2 = (i1 + 1) % len(p_list)
+        p2 = p_list[i2]
+        a = triangle_area(p0, p1, p2) / 1000.0
+        if auto_flip and a < 0:
+            r_list[i1] = -r_list[i1]
+            if gradual_flip:
+                r_list[i1] = r_list[i1] * min(1, abs(a))
+    # reduce radius that won't fit
+    for i1, p1 in enumerate(p_list):
+        i2 = (i1 + 1) % len(p_list)
+        p2, r2, r1 = p_list[i2], r_list[i2], r_list[i1]
+        r_list[i1], r_list[i2] = reduce_radius(p1, p2, r1, r2, reduce_both=reduce_both)
+    # calculate the tangents
+    a_list = []
+    for i1, p1 in enumerate(p_list):
+        i2 = (i1 + 1) % len(p_list)
+        p2, r2, r1 = p_list[i2], r_list[i2], r_list[i1]
+        cct = circ_circ_tangent(p1, p2, r1, r2)
+        a_list.append(cct)
+    # now draw it!
+    for i1, ia in enumerate(a_list):
+        i2 = (i1 + 1) % len(a_list)
+        p1, p2, r1, r2 = p_list[i1], p_list[i2], r_list[i1], r_list[i2]
+        a1, p11, p12 = ia
+        a2, p21, p22 = a_list[i2]
+        if DEBUG:
+            circle(p1[0], p1[1], r1 * 2)
+        if a1 != None and a2 != None:
+            start = a1 if a1 < a2 else a1 - TWO_PI # was <
+            if r2 < 0:  # was <=
+                a2 = a2 - TWO_PI
+            abs_angle = abs(a2 - start)
+            if abs_angle > TWO_PI:
+                if a2 < 0:
+                    a2 += TWO_PI
+                else:
+                    a2 -= TWO_PI
+            if abs(a2 - start) != TWO_PI:
+                pts_list.extend(arc_pts(p2[0], p2[1], r2 * 2, r2 * 2, start, a2,
+                                        **kwargs))
+            if DEBUG:
+                textSize(TEXT_HEIGHT)
+                text(' {:0.2f} {:0.2f}'.format(r2, degrees(abs_angle)), p2[0], p2[1])
+        else:
+            # when the the segment is smaller than the diference between
+            # radius, circ_circ_tangent won't renturn the angle
+            if DEBUG:
+                ellipse(p2[0], p2[1], r1, r1)
+            if a1:
+                pts_list.append((p12[0], p12[1]))
+            if a2:
+                pts_list.append((p21[0], p21[1]))
+    return pts_list
+
+def reduce_radius(p1, p2, r1, r2, reduce_both=True):
     d = dist(p1[0], p1[1], p2[0], p2[1])
     ri = abs(r1 - r2)
     if d - ri <= 0:
-        if abs(r1) > abs(r2):
-            r1 = map(d, ri + 1, 0, r1, r2)
+        if reduce_both:
+           r1, r2 = (remap(d, ri + 1, 0, r1, (r1 + r2) / 2),
+                     remap(d, ri + 1, 0, r2, (r1 + r2) / 2))
+        elif abs(r1) > abs(r2):
+            r1 = remap(d, ri + 1, 0, r1, r2)
         else:
-            r2 = map(d, ri + 1, 0, r2, r1)
-    return(r1, r2)
+            r2 = remap(d, ri + 1, 0, r2, r1)
+    return r1, r2
 
 def circ_circ_tangent(p1, p2, r1, r2):
     d = dist(p1[0], p1[1], p2[0], p2[1])
