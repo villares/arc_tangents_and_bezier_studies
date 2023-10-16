@@ -20,6 +20,7 @@ From https://github.com/villares/villares/blob/main/arcs.py
            In arc_augmented_poly & points: Fixing/changing the no radius list and no radius kwarg
            (now it means radius=0) and WIP still struggling with flipping and radius reduction behavior 
 2023_08_05 WIP py5 vertices optimization and some other refactoring
+2023_10_15 Making py5 names the default, preparing for an arc_tangents... repo update. 
 """
 
 from warnings import warn
@@ -29,19 +30,18 @@ try:
 except ModuleNotFoundError:
     from villares.line_geometry import is_poly_self_intersecting, triangle_area
 
-# The following block makes this compatible with py5coding.org
+# The following block makes this compatible with legacy Processing Python mode
 try:
-    EPSILON
+    begin_shape = beginShape
+    end_shape = endShape
+    bezier_vertex = bezierVertex
+    text_size = textSize 
     remap = map
     def vertices(pts):
         for p in pts:
             vertex(*p)
 except NameError:
     from py5 import *
-    beginShape = begin_shape
-    endShape = end_shape
-    bezierVertex = bezier_vertex
-    textSize = text_size
 
 DEBUG, TEXT_HEIGHT = False, 12  # For debug
 
@@ -81,10 +81,10 @@ def b_arc(cx, cy, w, h, start_angle, end_angle, mode=0):
     """
     Draw a bezier approximation of an arc using the same
     signature as the original Processing arc().
-    mode: 0 "normal" arc, using beginShape() and endShape()
+    mode: 0 "normal" arc, using begin_shape() and end_shape()
           1 "middle" used in recursive call of smaller arcs
-          2 "naked" like normal, but without beginShape() and
-             endShape() for use inside a larger PShape.
+          2 "naked" like normal, but without begin_shape() and
+             end_shape() for use inside a larger PShape/Py5Shape.
     """
     # Based on ideas from Richard DeVeneza via code by Golan Levin:
     # http://www.flong.com/blog/2009/bezier-approximation-of-a-circular-arc-in-processing/
@@ -128,17 +128,17 @@ def b_arc(cx, cy, w, h, start_angle, end_angle, mode=0):
             ellipse(px0, py0, 5, 5)
     # Drawing
     if mode == 0:  # 'normal' arc (not 'middle' nor 'naked')
-        beginShape()
+        begin_shape()
     if mode != 1:  # if not 'middle'
         vertex(px3, py3)
     if abs(theta) < HALF_PI:
-        bezierVertex(px2, py2, px1, py1, px0, py0)
+        bezier_vertex(px2, py2, px1, py1, px0, py0)
     else:
         # to avoid distortion, break into 2 smaller arcs
         b_arc(cx, cy, w, h, start_angle, end_angle - theta / 2.0, mode=1)
         b_arc(cx, cy, w, h, start_angle + theta / 2.0, end_angle, mode=1)
     if mode == 0:  # end of a 'normal' arc
-        endShape()
+        end_shape()
 
 def p_circle_arc(x, y, radius, start_ang, sweep_ang, mode=0, **kwargs):
     p_arc(x, y, radius * 2, radius * 2, start_ang, start_ang + sweep_ang,
@@ -151,15 +151,16 @@ def circle_arc_pts(x, y, radius, start_ang, sweep_ang, **kwargs):
 def p_arc(cx, cy, w, h, start_angle, end_angle, mode=0,
           num_points=24, vertex_func=None):
     """
-    A poly approximation of an arc using the same
-    signature as the original Processing arc().
-    mode: 0 "normal" arc-like, using beginShape() and endShape()
+    A poly approximation of an arc using the same signature as
+    the original Processing arc().
+    
+    mode: 0 "normal" arc-like, using begin_shape() and end_shape()
           1 "middle" not implemented on p_arc, used on recursive b_arc 
-          2 "naked" like normal, but without beginShape() and
-             endShape() for use inside a larger PShape.
+          2 "naked" like normal, but without begin_shape() and
+             end_shape() for use inside a larger PShape/Py5Shape.
     """
     if mode == 0:
-        beginShape()
+        begin_shape()
     vertex_pts = arc_pts(cx, cy, w, h, start_angle, end_angle, num_points)
     if vertex_func is None or vertex_fun == vertex:
         vertices(vertex_pts)
@@ -167,7 +168,7 @@ def p_arc(cx, cy, w, h, start_angle, end_angle, mode=0,
         for vx, vy in vertex_pts:
             vertex_func(vx, vy)
     if mode == 0:
-        endShape()
+        end_shape()
 
 def arc_pts(cx, cy, w, h, start_angle, end_angle, num_points=None, seg_len=None):
     """
@@ -196,9 +197,9 @@ def arc_pts(cx, cy, w, h, start_angle, end_angle, num_points=None, seg_len=None)
 
 def arc_filleted_poly(p_list, r_list=None, **kwargs):
     """
-    Draws a 'filleted' polygon with variable radius, depends on arc_corner()
+    Draws a 'filleted' polygon with variable radius, depends on arc_corner().
 
-    2020-09-24 Rewritten from poly_rounded2 to be a continous PShape 
+    2020-09-24 Rewritten from poly_rounded2 to be a continous PShape/Py5Shape 
     2020-09-27 Moved default args to kwargs, added kwargs support for custom arc_func
     2020-11-10 Moving vertex_func=vertex inside body to make this more compatible with pyp5js
     2020-11-11 Removing use of PVector to improve compatibility with pyp5js
@@ -236,7 +237,7 @@ def arc_filleted_poly(p_list, r_list=None, **kwargs):
                                        arc_func=arc_func, **kwargs))
         return pts_list
     # else, if draw_shape:
-    beginShape()
+    begin_shape()
     if open_poly:
         p0, first, p2, r = p0_p1_p2_r_sequence[0]
         vertex(*first)
@@ -245,17 +246,18 @@ def arc_filleted_poly(p_list, r_list=None, **kwargs):
                     arc_func=arc_func, **kwargs)
         p0, last, p2, r = p0_p1_p2_r_sequence[-1]
         vertex(*last)
-        endShape()       
+        end_shape()       
     else:    
         for p0, p1, p2, r in p0_p1_p2_r_sequence:
             arc_corner(p1, mid(p0, p1), mid(p1, p2), r,
                     arc_func=arc_func, **kwargs)
-        endShape(CLOSE)
+        end_shape(CLOSE)
 
 def arc_corner(pc, p1, p2, r, **kwargs):
     """
     Draw an arc that 'rounds' the point pc between p1 and p2 using arc_func
     Based on '...rounded corners in a polygon' from https://stackoverflow.com/questions/24771828/
+    
     2020-09-27 Added support for custom arc_func & kwargs
     2020-11-11 Avoiding the use of PVector
     2022-06-11 Now returns the result of arc_pts
@@ -322,14 +324,14 @@ def arc_corner(pc, p1, p2, r, **kwargs):
     if arc_func == arc_pts:
         return arc_pts(arc_center[0], arc_center[1], 2 * max_r, 2 * max_r,
                         start_angle, start_angle + sweep_angle, **kwargs)
-    # else, draw "naked" arc (without beginShape & endShape)
+    # else, draw "naked" arc (without begin_shape & end_shape)
     arc_func(arc_center[0], arc_center[1], 2 * max_r, 2 * max_r,
              start_angle, start_angle + sweep_angle, mode=2, **kwargs)
 
 
 def arc_augmented_poly(op_list, or_list=None, **kwargs):
     """
-    Draw a continous PShape "Polyline" as if around pins of various diameters.
+    Draw a continous PShape/Py5Shape "Polyline" as if around pins of various diameters.
     Has an ugly check_intersection mode that does not draw and "roughly" checks
     for self intersections using slow polygon aproximations.
     2020-09-22 Renamed from b_poly_arc_augmented 
@@ -409,7 +411,7 @@ def arc_augmented_poly(op_list, or_list=None, **kwargs):
         if is_poly_self_intersecting(skeleton_points):
             return True
     # now draw it!
-    beginShape()
+    begin_shape()
     for i1, ia in enumerate(a_list):
         i2 = (i1 + 1) % len(a_list)
         p1, p2, r1, r2 = p_list[i1], p_list[i2], r_list[i1], r_list[i2]
@@ -431,7 +433,7 @@ def arc_augmented_poly(op_list, or_list=None, **kwargs):
                 arc_func(p2[0], p2[1], r2 * 2, r2 * 2, start, a2, mode=2,
                          **kwargs)
             if DEBUG:
-                textSize(TEXT_HEIGHT)
+                text_size(TEXT_HEIGHT)
                 text(str(int(degrees(start - a2))), p2[0], p2[1])
         else:
             # when the the segment is smaller than the diference between
@@ -442,7 +444,7 @@ def arc_augmented_poly(op_list, or_list=None, **kwargs):
                 vertex_func(p12[0], p12[1])
             if a2:
                 vertex_func(p21[0], p21[1])
-    endShape(CLOSE)
+    end_shape(CLOSE)
     # check augmented poly aproximation instersection
     if check_intersection:
         return is_poly_self_intersecting(_points)
@@ -526,7 +528,7 @@ def arc_augmented_points(op_list, or_list=None, **kwargs):
                 pts_list.extend(arc_pts(p2[0], p2[1], r2 * 2, r2 * 2, start, a2,
                                         **kwargs))
             if DEBUG:
-                textSize(TEXT_HEIGHT)
+                text_size(TEXT_HEIGHT)
                 text(' {:0.2f} {:0.2f}'.format(r2, degrees(abs_angle)), p2[0], p2[1])
         else:
             # when the the segment is smaller than the diference between
@@ -588,7 +590,7 @@ def var_bar(p1x, p1y, p2x, p2y, r1, r2=None, **kwargs):
         shorter: Will draw a shorter "bar" (only if r1 == r2)
         internal: When too short draws circle from smaller radius end
                   inside circle from larger radius end (default is  True)
-        arc_func: Allows choosing the arc funcio, like p_arc (default is b_arc)
+        arc_func: Allows choosing the arc funcion, like p_arc (default is b_arc)
         num_points: Will be passed to the arc_func (works with p_arc)
     
     # 2020-9-25 Added **kwargs, now one can use arc_func=p_arc & num_points=N   
@@ -616,13 +618,13 @@ def var_bar(p1x, p1y, p2x, p2y, r1, r2=None, **kwargs):
         translate(p1x, p1y)
         angle = atan2(p1x - p2x, p2y - p1y)
         rotate(angle + HALF_PI)
-        beginShape()
+        begin_shape()
         offset = shorter / 2.0 if shorter < d else d / 2.0
         arc_func(offset, 0, r1 * 2, r1 * 2,
                  -beta - PI, beta - PI, mode=2, **kwargs)
         arc_func(d - offset, 0, r2 * 2, r2 * 2,
                  beta - PI, PI - beta, mode=2, **kwargs)
-        endShape(CLOSE)
+        end_shape(CLOSE)
         pop()
     else:  # draw a circle with the bigger radius if distance is too small
         r = max(r1, r2)
