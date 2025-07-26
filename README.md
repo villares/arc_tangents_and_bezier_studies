@@ -155,4 +155,4 @@ Perhaps the bigest motivation for starting the studies in this repository, next,
 
 ----
 
-Please open an issue if you have a question. Consider supporting the author, [Alexandre B A Villares](https://abav.lugaralgum.com), at [gumroad.com/villares](https://gumroad.com/villares).
+Check out the [repository](https://github.com/villares/arc_tangents_and_bezier_studies/), amd please open an [issue](https://github.com/villares/arc_tangents_and_bezier_studies/issues) if you have a question. Consider supporting the author, [Alexandre B A Villares](https://abav.lugaralgum.com/links).
