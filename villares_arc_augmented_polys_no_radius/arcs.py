@@ -21,6 +21,7 @@ From https://github.com/villares/villares/blob/main/arcs.py
            (now it means radius=0) and WIP still struggling with flipping and radius reduction behavior 
 2023_08_05 WIP py5 vertices optimization and some other refactoring
 2023_10_15 Making py5 names the default, preparing for an arc_tangents... repo update. 
+2025 This is legacy. I'm rebooting at arc_helpers.py without Processing.py support. 
 """
 
 from warnings import warn
@@ -145,7 +146,7 @@ def p_circle_arc(x, y, radius, start_ang, sweep_ang, mode=0, **kwargs):
           mode=mode, **kwargs)
 
 def circle_arc_pts(x, y, radius, start_ang, sweep_ang, **kwargs):
-    arc_pts(x, y, radius * 2, radius * 2, start_ang, start_ang + sweep_ang,
+    return arc_pts(x, y, radius * 2, radius * 2, start_ang, start_ang + sweep_ang,
               **kwargs)
 
 def p_arc(cx, cy, w, h, start_angle, end_angle, mode=0,

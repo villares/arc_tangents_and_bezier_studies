@@ -23,17 +23,26 @@ From https://github.com/villares/villares/blob/main/line_geometry.py
 2021_09_21 line_intesect() now may provide intersection outside the line segments & bug fix. Clean up.
 2021_10_20 Make min_max() compatible with Python 3
 2022_03_02 Make it work with py5
+2022_04_14 Adding to point_inside_poly(x, y, poly) a (pt, poly) arguments option
+2022_06_13 Adding simplified_points()
+2023_10_15 WIP Making py5 names the default. TODO: deal with PVectors (remove?)
+2024_06_06 Made Py5Vectora/n alias to PVector for old sketches. Not tested.
+2025 I will try to restart this at geometry_helpers.py
 """
 
+# The following block is for compatibility with legacy Processing Python mode
 from __future__ import division
-
 try:
-    EPSILON
+    begin_shape = beginShape
+    end_shape = endShape
+    create_shape = createShape
+    PShape.add_child = PShape.addChild
+    Py5Vector = PVector
+    def vertices(pts):
+        for p in pts:
+            vertex(*p)
 except NameError:
     from py5 import *
-    beginShape = begin_shape
-    endShape = end_shape
-    bezierVertex = bezier_vertex
 
 class Line():
 
@@ -52,7 +61,7 @@ class Line():
             self.end = tuple(args[3:])
         else:
             raise ValueError(
-    "Requires 1 Line-like object, a pair of 2D or 3D tuples/PVectors, or x1, y1 [,z1], x2, y2 [,z2] coords."
+    "Requires 1 Line-like object, a pair of 2D or 3D tuples/Py5Vectors, or x1, y1 [,z1], x2, y2 [,z2] coords."
             )
 
     def __getitem__(self, i):
@@ -72,7 +81,7 @@ class Line():
         function = kwargs.pop('function', None)
         ps = kwargs.get('ps', None)
         if not function and ps:
-            ps.addChild(createShape(LINE,
+            ps.add_child(create_shape(LINE,
                                     self[0][0], self[0][1],
                                     self[1][0], self[1][1]))
         elif not function:
@@ -110,8 +119,8 @@ class Line():
 
     point_over = contains_point
 
-    def as_PVector(self):
-        return PVector(self[1][0], self[1][1]) - PVector(self[0][0], self[0][1])
+    def as_Py5Vector(self):
+        return Py5Vector(self[1][0], self[1][1]) - Py5Vector(self[0][0], self[0][1])
 
     def point_colinear(self, x, y, tolerance=EPSILON):
         return points_are_colinear(x, y,
@@ -126,7 +135,7 @@ def line_intersect(*args, **kwargs):
     2021_09_26 Adding intersection outside the segments. Also fixing bug when calling with 8 coords as arguments.
     2021_09_26 Removed line_a & line_b variables, rewrote ZeroDivision exception catching as a conditional check.
     """
-    as_PVector = kwargs.get('as_PVector', False)
+    as_Py5Vector = kwargs.get('as_Py5Vector', False)
     in_segment = kwargs.get('in_segment', True)
     
     if len(args) == 2:  # expecting 2 Line objects or 2 tuples of 2 point tuples.
@@ -149,7 +158,7 @@ def line_intersect(*args, **kwargs):
     if not in_segment or 0 <= uA <= 1 and 0 <= uB <= 1:
         x = x1 + uA * (x2 - x1)
         y = y1 + uA * (y2 - y1)
-        return PVector(x, y) if as_PVector else (x, y)
+        return Py5Vector(x, y) if as_Py5Vector else (x, y)
     else:
         return None
     
@@ -203,35 +212,25 @@ def draw_poly(points, holes=None, closed=True):
         """
         if (isinstance(seq, list) or
                 isinstance(seq, tuple) or
-                isinstance(seq, PVector)):
+                isinstance(seq, Py5Vector)):
             return 1 + max(depth(item) for item in seq)
         else:
             return 0
 
-    beginShape()  # inicia o PShape
-    if len(tuple(points[0])) == 2:
-        for p in points:
-            vertex(p[0], p[1])
-    else:
-        for p in points:
-            vertex(*p)  # desempacota pontos em 3d
-
+    begin_shape()  # inicia o PShape
+    vertices(points)
     holes = holes or []  # equivale a: holes if holes else []
     if holes and depth(holes) == 2:  # sequência única de pontos
         holes = (holes,)     # envolve em um tupla
     for hole in holes:  # para cada furo
         beginContour()  # inicia o furo
-        for p in hole:
-            if len(p) == 2 or p[2] == 0:
-                vertex(p[0], p[1])
-            else:
-                vertex(*p)
+        vertices(hole)
         endContour()  # final e um furo
     # encerra o PShape
     if closed:
-        endShape(CLOSE)
+        end_shape(CLOSE)
     else:
-        endShape()
+        end_shape()
 
 poly = draw_poly
 
@@ -262,12 +261,12 @@ def pairwise(iterable):
 
 def min_max(points):
     """
-    Return two tuples or PVectors with the most extreme coordinates,
+    Return two tuples or Py5Vectors with the most extreme coordinates,
     resulting in "bounding box" corners.
     """
     coords = tuple(zip(*points))
-    if isinstance(points[0], PVector):
-        return PVector(*map(min, coords)), PVector(*map(max, coords))
+    if isinstance(points[0], Py5Vector):
+        return Py5Vector(*map(min, coords)), Py5Vector(*map(max, coords))
     else:
         return tuple(map(min, coords)), tuple(map(max, coords))
 
@@ -301,29 +300,25 @@ def rect_points(ox, oy, w, h, mode=CORNER, angle=None):
 
 def rotate_point(*args):
     """
-    point (tuple/PVector), angle
+    point (tuple/Py5Vector), angle
     x, y, angle (around 0, 0)
-    point (tuple/PVector), angle, center (tuple/PVector)
+    point (tuple/Py5Vector), angle, center (tuple/Py5Vector)
     x, y, angle, x_center, y_center
     """
     if len(args) == 2:
         (xp, yp), angle = args
         x0, y0 = 0, 0
-    if len(args) == 3:
+    elif len(args) == 3:
         try:
             (xp, yp), angle, (x0, y0) = args
         except TypeError:
             xp, yp, angle = args
             x0, y0 = 0, 0
-    if len(args) == 5:
+    elif len(args) == 5:
         xp, yp, angle, x0, y0 = args
     x, y = xp - x0, yp - y0  # translate to origin
     xr = x * cos(angle) - y * sin(angle)
     yr = y * cos(angle) + x * sin(angle)
-    # if isinstance(args[0], PVector):                
-    #     return PVector(xr + x0, yr + y0)
-    # else:
-    #     return (xr + x0, yr + y0)
     return (xr + x0, yr + y0)
 
 def point_in_screen(*args):
@@ -358,18 +353,26 @@ def is_poly_self_intersecting(poly_points):
                     return True
     return False
 
-def point_inside_poly(x, y, points):
+def point_inside_poly(*args):
     # ray-casting algorithm based on
     # https://wrf.ecse.rpi.edu/Research/Short_Notes/pnpoly.html
+    if len(args) == 2:
+        (x, y), poly = args
+    else:
+        x, y, poly = args
     inside = False
-    for i, p in enumerate(points):
-        pp = points[i - 1]
+    for i, p in enumerate(poly):
+        pp = poly[i - 1]
         xi, yi = p
         xj, yj = pp
         intersect = ((yi > y) != (yj > y)) and (x < (xj - xi) * (y - yi) / (yj - yi) + xi)
         if intersect:
             inside = not inside
     return inside
+
+def centroid(pts):
+    xs, ys = zip(*pts)
+    return sum(xs) / len(xs), sum(ys) / len(ys)
 
 def inter_lines(given_line, poly_points):
     """ 
@@ -441,7 +444,7 @@ def hatch_poly(*args, **kwargs):
     function = kwargs.pop('function', None)
     base = kwargs.pop('base', True)
     odd_function = kwargs.pop('odd_function', False)
-    kwargs['ps'] = ps = (createShape(GROUP) if kwargs.get('ps', False)
+    kwargs['ps'] = ps = (create_shape(GROUP) if kwargs.get('ps', False)
                          else False)
     num = int(d / spacing)
     rr = [rotate_point(x, y, angle, cx, cy)
@@ -469,3 +472,11 @@ def lerp_tuple(a, b, t):
     return tuple(lerp_tuple(ca, cb, t) if isinstance(ca, tuple)
                  else lerp(ca, cb, t)             
                  for ca, cb in zip(a, b))
+    
+def simplified_points(pts_list, min_dist):
+        reference_point = pts_list[0]
+        yield reference_point
+        for x, y in pts_list[1:]:
+            if dist(x, y, *reference_point) >= min_dist: 
+                reference_point = x, y
+                yield x, y
