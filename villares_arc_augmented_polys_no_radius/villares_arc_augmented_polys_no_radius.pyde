@@ -2,7 +2,6 @@
 
 # github.com/villares/villares
 from arcs import arc_filleted_poly, arc_augmented_poly
-from line_geometry import draw_poly  # arc_augmented_poly needs line_geom. too
 
 def setup():
     size(400, 200)
@@ -26,3 +25,9 @@ def draw():
     # saveFrame('arc_filleted_poly.png')
     # arc_augmented_poly(p_list,r_list)
     # saveFrame('arc_augmented_poly.png')
+    
+def draw_poly(pts):
+    beginShape()
+    for x, y in pts:
+        vertex(x, y)
+    endShape(CLOSE)

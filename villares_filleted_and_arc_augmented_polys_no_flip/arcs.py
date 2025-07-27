@@ -26,11 +26,6 @@ From https://github.com/villares/villares/blob/main/arcs.py
 
 from warnings import warn
 
-try:
-    from line_geometry import is_poly_self_intersecting, triangle_area
-except ModuleNotFoundError:
-    from villares.line_geometry import is_poly_self_intersecting, triangle_area
-
 # The following block makes this compatible with legacy Processing Python mode
 try:
     begin_shape = beginShape
@@ -671,3 +666,26 @@ def rotate_offset_points(pts, angle, offx, offy, y0=0, x0=0):
     return [(((xp - x0) * cos(angle) - (yp - y0) * sin(angle)) + x0 + offx,
              ((yp - y0) * cos(angle) + (xp - x0) * sin(angle)) + y0 + offy)
             for xp, yp in pts]
+    
+def triangle_area(a, b, c):
+    area = (a[0] * (b[1] - c[1]) +
+            b[0] * (c[1] - a[1]) +
+            c[0] * (a[1] - b[1]))
+    return area
+
+def pairwise(iterable):
+    from itertools import tee
+    "s -> (s0, s1), (s1, s2), (s2, s3), ..."
+    a, b = tee(iterable)
+    next(b, None)
+    return list(zip(a, b))
+
+def is_poly_self_intersecting(poly_points):
+    edges = pairwise(poly_points) + [(poly_points[-1], poly_points[0])]
+    for a, b in edges[::-1]:
+        for c, d in edges[2::]:
+            # test only non consecutive edges
+            if (a != c) and (b != c) and (a != d):
+                if simple_intersect(a, b, c, d):
+                    return True
+    return False
