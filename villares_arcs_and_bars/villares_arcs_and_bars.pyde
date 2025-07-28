@@ -15,7 +15,7 @@ def setup():
 def draw():
     background(200)
     fill(0)
-    text('click to toggle p_arc polygonal aprox. and var_bar_pts', 20, 20)
+    text('click to toggle p_arc polygonal approx. and var_bar_pts', 20, 20)
     text(('var_bar with b_arc', 'var_bar with p_arc', 'var_bar_pts')[mode], 20, 380)
     fill(0, 0, 200, 100)
     strokeWeight(1)

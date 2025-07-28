@@ -1,7 +1,7 @@
 """
 Demo for
 - var_bar: Tangent/tangent shape on 2 circles of arbitrary radius;
-  It uses the b_arc funtion, Bezier aproximation of arcs
+  It uses the b_arc funtion, Bezier approximation of arcs
   but it can also use p_arc, a poly approximation.  
 - bar: simplified version, both ends with same radius;
 - var_bar_pts: but provides vertex coords for a var_bar-like shape
@@ -18,7 +18,7 @@ def setup():
 def draw():
     background(200)
     fill(0)
-    text('click to toggle p_arc polygonal aprox. and var_bar_pts', 20, 20)
+    text('click to toggle p_arc polygonal approx. and var_bar_pts', 20, 20)
     text(('var_bar with b_arc', 'var_bar with p_arc', 'var_bar_pts')[mode], 20, 380)
     fill(0, 0, 200, 100)
     stroke_weight(1)

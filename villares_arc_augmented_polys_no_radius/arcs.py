@@ -202,7 +202,7 @@ def arc_filleted_poly(p_list, r_list=None, **kwargs):
     2022-03-13 Allows a radius keyword argument to be used when no r_list is suplied
     2022-06-11 Refactoring and added arc_pts non-drawing feature that returns points.
     """
-    arc_func = kwargs.pop('arc_func', b_arc)  # draws with bezier aprox. arc by default
+    arc_func = kwargs.pop('arc_func', b_arc)  # draws with bezier approx. arc by default
     open_poly = kwargs.pop('open_poly', False)  # assumes a closed poly by default
     assert p_list, 'No points were provided.'
     assert not ('radius' in kwargs and r_list),\
@@ -258,7 +258,7 @@ def arc_corner(pc, p1, p2, r, **kwargs):
     2020-11-11 Avoiding the use of PVector
     2022-06-11 Now returns the result of arc_pts
     """
-    arc_func = kwargs.pop('arc_func', b_arc)  # draws with bezier aprox. arc by default
+    arc_func = kwargs.pop('arc_func', b_arc)  # draws with bezier approx. arc by default
 
     def proportion_point(pt, segment, L, dx, dy):
         factor = float(segment) / L if L != 0 else segment
@@ -329,7 +329,7 @@ def arc_augmented_poly(op_list, or_list=None, **kwargs):
     """
     Draw a continous PShape/Py5Shape "Polyline" as if around pins of various diameters.
     Has an ugly check_intersection mode that does not draw and "roughly" checks
-    for self intersections using slow polygon aproximations.
+    for self intersections using slow polygon approximations.
     2020-09-22 Renamed from b_poly_arc_augmented 
     2020-09-24 Removed Bezier mode in favour of arc_func + any keyword arguments.
     2020-09-26 Moved arc_func to kwargs, updates exceptions
@@ -398,7 +398,7 @@ def arc_augmented_poly(op_list, or_list=None, **kwargs):
         p2, r2, r1 = p_list[i2], r_list[i2], r_list[i1]
         cct = circ_circ_tangent(p1, p2, r1, r2)
         a_list.append(cct)
-    # check basic "skeleton poly" intersection (whithout the p_arc aprox.)
+    # check basic "skeleton poly" intersection (whithout the p_arc approx.)
     if check_intersection:
         skeleton_points = []
         for ang, p1, p2 in a_list:
@@ -441,7 +441,7 @@ def arc_augmented_poly(op_list, or_list=None, **kwargs):
             if a2:
                 vertex_func(p21[0], p21[1])
     end_shape(CLOSE)
-    # check augmented poly aproximation instersection
+    # check augmented poly approximation instersection
     if check_intersection:
         return is_poly_self_intersecting(_points)
 
