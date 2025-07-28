@@ -57,23 +57,23 @@ Other functions based on `b_arc`, and a polygonal approximation called `p_arc` c
 …
 # default var_bar & bar with b_arc
 var_bar(50, 165, 350, 315, 40, 0) # by default arc_func=b_arc
-bar(50, 55, 350, 255, thickness=60, shorter=mouseX)
-var_bar(50, 255, 50 + mouseX * 0.6, 255 + mouseX * 0.25, 20, 40)
+bar(50, 55, 350, 255, thickness=60, shorter=mouse_x)
+var_bar(50, 255, 50 + mouse_x * 0.6, 255 + mouse_x * 0.25, 20, 40)
 … 
 # var_bar & bar with p_arc
 var_bar(50, 165, 350, 315, 40, 0, arc_func=p_arc, num_points=6)
 bar(50, 55, 350, 255, thickness=60,
-    shorter=mouseX, arc_func=p_arc, num_points=3)
+    shorter=mouse_x, arc_func=p_arc, num_points=3)
 var_bar(50, 255,
-        50 + mouseX * 0.6, 255 + mouseX * 0.25, 20, 40,
+        50 + mouse_x * 0.6, 255 + mouse_x * 0.25, 20, 40,
         arc_func=p_arc, num_points=8)
 … 
 # var_bar_pts
 pts1 = var_bar_pts(50, 165, 350, 315, 40, 0, num_points=6)
 pts2 = var_bar_pts(50, 55, 350, 255, 30, 30,
-                   shorter=mouseX, num_points=3)
+                   shorter=mouse_x, num_points=3)
 pts3 = var_bar_pts(50, 255,
-                   50 + mouseX * 0.6, 255 + mouseX * 0.25, 20, 40,
+                   50 + mouse_x * 0.6, 255 + mouse_x * 0.25, 20, 40,
                    num_points=8)
 stroke_weight(5)
 for px, py in pts1 + pts2 + pts3:
@@ -101,7 +101,7 @@ Perhaps the bigest motivation for starting the studies in this repository, next,
   ![](villares_filleted_and_arc_augmented_polys/arc_filleted_poly.gif)
   
   ```python
-  p_list = [(30, 160), (250, 50), (350, 150), (mouseX, mouseY)]
+  p_list = [(30, 160), (250, 50), (350, 150), (mouse_x, mouse_y)]
   r_list = [20, 30, 40, 30]
   …
   arc_filleted_poly(p_list,r_list)  # arc_func=b_arc by default
@@ -121,7 +121,7 @@ Perhaps the bigest motivation for starting the studies in this repository, next,
   ![](https://raw.githubusercontent.com/villares/arc_tangents_and_bezier_studies/main/villares_filleted_and_arc_augmented_polys/arc_augmented_poly.gif)
   
   ```python
-  p_list = [(30, 160), (250, 50), (350, 150), (mouseX, mouseY)]
+  p_list = [(30, 160), (250, 50), (350, 150), (mouse_x, mouse_y)]
   r_list = [20, 30, 40, 30]
   …
   arc_augmented_poly(p_list,r_list)  # arc_func=b_arc by default
