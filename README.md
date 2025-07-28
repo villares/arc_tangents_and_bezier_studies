@@ -29,16 +29,16 @@ x, y, w, h, start_angle, end_angle = 75, 100, 100, 100, 0, PI + QUARTER_PI
 # Standalone arc replacement
 b_arc(x, y, w, h, start_angle, end_angle)
 
-# mode=2 for use inside beginShape/endShape
+# mode=2 for use inside begin_shape/end_shape
 x += 125
-beginShape()
+begin_shape()
 b_arc(x, y, w, h, start_angle, end_angle, mode=2) 
-endShape(CLOSE)
+end_shape(CLOSE)
 x += 125
-beginShape()
+begin_shape()
 b_arc(x, y, w, h, start_angle, end_angle, mode=2)
 vertex(x, y)
-endShape(CLOSE)
+end_shape(CLOSE)
 ```
 
 ### More arcs, the `p_arc` function, and the first shapes with tangents
