@@ -21,7 +21,8 @@ From https://github.com/villares/villares/blob/main/arcs.py
            (now it means radius=0) and WIP still struggling with flipping and radius reduction behavior 
 2023_08_05 WIP py5 vertices optimization and some other refactoring
 2023_10_15 Making py5 names the default, preparing for an arc_tangents... repo update. 
-2025 This is legacy. I'm rebooting at arc_helpers.py without Processing.py support. 
+2025       This is legacy. I'm rebooting at arc_helpers.py without Processing.py support. 
+2025-07-28 Removing dependency on line_geometry.
 """
 
 from warnings import warn
@@ -673,13 +674,6 @@ def triangle_area(a, b, c):
             c[0] * (a[1] - b[1]))
     return area
 
-def pairwise(iterable):
-    from itertools import tee
-    "s -> (s0, s1), (s1, s2), (s2, s3), ..."
-    a, b = tee(iterable)
-    next(b, None)
-    return list(zip(a, b))
-
 def is_poly_self_intersecting(poly_points):
     edges = pairwise(poly_points) + [(poly_points[-1], poly_points[0])]
     for a, b in edges[::-1]:
@@ -689,3 +683,27 @@ def is_poly_self_intersecting(poly_points):
                 if simple_intersect(a, b, c, d):
                     return True
     return False
+
+def pairwise(iterable):
+    from itertools import tee
+    "s -> (s0, s1), (s1, s2), (s2, s3), ..."
+    a, b = tee(iterable)
+    next(b, None)
+    return list(zip(a, b))
+
+def ccw(*args):
+    """Returns True if the points are arranged counter-clockwise in the plane"""
+    if len(args) == 1:
+        a, b, c = args[0]
+    else:
+        a, b, c = args
+    return (b[0] - a[0]) * (c[1] - a[1]) > (b[1] - a[1]) * (c[0] - a[0])
+
+def simple_intersect(*args):
+    """Returns True if line segments intersect."""
+    if len(args) == 2:    
+        (a1, b1), (a2, b2) = args[0], args[1]
+    else:
+        a1, b1, a2, b2 = args
+    return ccw(a1, b1, a2) != ccw(a1, b1, b2) and ccw(a2, b2, a1) != ccw(a2, b2, b1)
+
