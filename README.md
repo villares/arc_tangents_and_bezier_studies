@@ -4,11 +4,17 @@
 >
 > from sketch-a-day project, [sketch_2020_09_26a](https://github.com/villares/sketch-a-day/tree/main/2020/sketch_2020_09_26a)
 
-This repository contains the product of my studies trying to work with arcs, bezier approximations of arcs and tangents. I have added very little new ideas here, you can look at the findings & previous studies I moved into the `PRIOR_ART` folder. I tried to attribute stuff with links. 
 
-The functions presented here can be found at [`arcs.py`](https://raw.githubusercontent.com/villares/villares/refs/heads/main/arcs.py), they were made initially on Processing Python mode and now work with [py5](http://py5coding.org). Most will work with [pyp5js](berinhard.github.io/pyp5js/) or with the modified [pyp5js/py5mode](https://abav.lugaralgum.com/pyp5js/py5mode) too, and I have ported `b_arc` for Processing Java and p5js. **You are welcome to help porting more stuff!**
 
-Please note that the most recent (and maybe unstable?) version of the Python functions shown here, but with support only for py5, are kept at this other repository: [github.com/villares/villares](https://github.com/villares/villares), on [`arcs_helper.py`](https://github.com/villares/villares/blob/main/arc_helpers.py).
+[This repository](https://github.com/villares/arc_tangents_and_bezier_studies/) contains the product of my studies trying to work with arcs, bezier approximations of arcs and tangents. I have added just a few new ideas here, you can look at the findings & previous studies I moved into the `PRIOR_ART` folder, and I tried to attribute stuff with links. Feel free to open an [issue](https://github.com/villares/arc_tangents_and_bezier_studies/issues) if you have a question. 
+
+The functions presented here can be found at [`arcs.py`](https://raw.githubusercontent.com/villares/villares/refs/heads/main/arcs.py), they were made initially on Processing Python mode and now work with [py5](http://py5coding.org). Most will work with [pyp5js](berinhard.github.io/pyp5js/) or with the modified [pyp5js/py5mode](https://abav.lugaralgum.com/pyp5js/py5mode) too, and I have ported `b_arc` for Processing Java and p5js. 
+
+**You are welcome to help porting more stuff!**
+
+Please note that the most recent (and maybe unstable?) version of the Python functions shown here, with support only for py5, are kept at this other repository: [github.com/villares/villares](https://github.com/villares/villares), on [`arcs_helper.py`](https://github.com/villares/villares/blob/main/arc_helpers.py).
+
+**Consider supporting my work with a small donation (links on the footer).**
 
 ### Bezier approximation of an arc
 
@@ -157,4 +163,6 @@ Perhaps the bigest motivation for starting the studies in this repository, next,
 
 ----
 
-This page lives at [this repository](https://github.com/villares/arc_tangents_and_bezier_studies/), please open an [issue](https://github.com/villares/arc_tangents_and_bezier_studies/issues) if you have a question. Consider supporting my work with a small donation! [More links about me here](https://abav.lugaralgum.com/links).
+
+If you like this, support my work with a small donation!
+[Here](https://www.paypal.com/donate/?hosted_button_id=5B4MZ78C9J724), with [Wise](https://wise.com/pay/me/alexandrev562) or at [LiberaPay](https://liberapay.com/Villares).
