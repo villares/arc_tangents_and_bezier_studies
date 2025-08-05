@@ -21,14 +21,11 @@ From https://github.com/villares/villares/blob/main/arcs.py
            (now it means radius=0) and WIP still struggling with flipping and radius reduction behavior 
 2023_08_05 WIP py5 vertices optimization and some other refactoring
 2023_10_15 Making py5 names the default, preparing for an arc_tangents... repo update. 
+2025       This is legacy. I'm rebooting at arc_helpers.py without Processing.py support. 
+2025-07-28 Removing dependency on line_geometry.
 """
 
 from warnings import warn
-
-try:
-    from line_geometry import is_poly_self_intersecting, triangle_area
-except ModuleNotFoundError:
-    from villares.line_geometry import is_poly_self_intersecting, triangle_area
 
 # The following block makes this compatible with legacy Processing Python mode
 try:
@@ -145,7 +142,7 @@ def p_circle_arc(x, y, radius, start_ang, sweep_ang, mode=0, **kwargs):
           mode=mode, **kwargs)
 
 def circle_arc_pts(x, y, radius, start_ang, sweep_ang, **kwargs):
-    arc_pts(x, y, radius * 2, radius * 2, start_ang, start_ang + sweep_ang,
+    return arc_pts(x, y, radius * 2, radius * 2, start_ang, start_ang + sweep_ang,
               **kwargs)
 
 def p_arc(cx, cy, w, h, start_angle, end_angle, mode=0,
@@ -162,7 +159,7 @@ def p_arc(cx, cy, w, h, start_angle, end_angle, mode=0,
     if mode == 0:
         begin_shape()
     vertex_pts = arc_pts(cx, cy, w, h, start_angle, end_angle, num_points)
-    if vertex_func is None or vertex_fun == vertex:
+    if vertex_func is None or vertex_func == vertex:
         vertices(vertex_pts)
     else:
         for vx, vy in vertex_pts:
@@ -206,11 +203,11 @@ def arc_filleted_poly(p_list, r_list=None, **kwargs):
     2022-03-13 Allows a radius keyword argument to be used when no r_list is suplied
     2022-06-11 Refactoring and added arc_pts non-drawing feature that returns points.
     """
-    arc_func = kwargs.pop('arc_func', b_arc)  # draws with bezier aprox. arc by default
+    arc_func = kwargs.pop('arc_func', b_arc)  # draws with bezier approx. arc by default
     open_poly = kwargs.pop('open_poly', False)  # assumes a closed poly by default
     assert p_list, 'No points were provided.'
     assert not ('radius' in kwargs and r_list),\
-           "You can't use a radii list and a radius kwarg together."
+           "You can\'t use a radii list and a radius kwarg together."
     if r_list is None:
         r_list = [kwargs.pop('radius', 0)] * len(p_list)
     p_list, r_list = list(p_list), list(r_list)
@@ -262,7 +259,7 @@ def arc_corner(pc, p1, p2, r, **kwargs):
     2020-11-11 Avoiding the use of PVector
     2022-06-11 Now returns the result of arc_pts
     """
-    arc_func = kwargs.pop('arc_func', b_arc)  # draws with bezier aprox. arc by default
+    arc_func = kwargs.pop('arc_func', b_arc)  # draws with bezier approx. arc by default
 
     def proportion_point(pt, segment, L, dx, dy):
         factor = float(segment) / L if L != 0 else segment
@@ -333,7 +330,7 @@ def arc_augmented_poly(op_list, or_list=None, **kwargs):
     """
     Draw a continous PShape/Py5Shape "Polyline" as if around pins of various diameters.
     Has an ugly check_intersection mode that does not draw and "roughly" checks
-    for self intersections using slow polygon aproximations.
+    for self intersections using slow polygon approximations.
     2020-09-22 Renamed from b_poly_arc_augmented 
     2020-09-24 Removed Bezier mode in favour of arc_func + any keyword arguments.
     2020-09-26 Moved arc_func to kwargs, updates exceptions
@@ -347,7 +344,7 @@ def arc_augmented_poly(op_list, or_list=None, **kwargs):
     
     assert op_list, 'No points were provided.'
     assert not ('radius' in kwargs and or_list),\
-           "You can't use a radii list and a radius kwarg together."
+           "You can\'t use a radii list and a radius kwarg together."
     if or_list is None:
         or_list = [kwargs.pop('radius', 0)] * len(op_list)
     r2_list = list(or_list)
@@ -402,7 +399,7 @@ def arc_augmented_poly(op_list, or_list=None, **kwargs):
         p2, r2, r1 = p_list[i2], r_list[i2], r_list[i1]
         cct = circ_circ_tangent(p1, p2, r1, r2)
         a_list.append(cct)
-    # check basic "skeleton poly" intersection (whithout the p_arc aprox.)
+    # check basic "skeleton poly" intersection (whithout the p_arc approx.)
     if check_intersection:
         skeleton_points = []
         for ang, p1, p2 in a_list:
@@ -445,7 +442,7 @@ def arc_augmented_poly(op_list, or_list=None, **kwargs):
             if a2:
                 vertex_func(p21[0], p21[1])
     end_shape(CLOSE)
-    # check augmented poly aproximation instersection
+    # check augmented poly approximation instersection
     if check_intersection:
         return is_poly_self_intersecting(_points)
 
@@ -460,7 +457,7 @@ def arc_augmented_points(op_list, or_list=None, **kwargs):
     
     assert op_list, 'No points were provided.'
     assert not ('radius' in kwargs and or_list),\
-        "You can't use a radii list and a radius kwarg together."
+        "You can\'t use a radii list and a radius kwarg together."
     if or_list is None:
         or_list = [kwargs.pop('radius', 0)] * len(op_list)
     r2_list = list(or_list)
@@ -546,7 +543,7 @@ def reduce_radius(p1, p2, r1, r2, reduce_both=True):
     ri = abs(r1 - r2)
     if d - ri <= 0:
         if reduce_both:
-           r1, r2 = (remap(d, ri + 1, 0, r1, (r1 + r2) / 2),
+            r1, r2 = (remap(d, ri + 1, 0, r1, (r1 + r2) / 2),
                      remap(d, ri + 1, 0, r2, (r1 + r2) / 2))
         elif abs(r1) > abs(r2):
             r1 = remap(d, ri + 1, 0, r1, r2)
@@ -606,9 +603,9 @@ def var_bar(p1x, p1y, p2x, p2y, r1, r2=None, **kwargs):
     arc_func = kwargs.pop('arc_func', b_arc)
     shorter = kwargs.pop('shorter', 0)
     assert not (shorter and r1 != r2),\
-        "Can't draw shorter var_bar with different radii. r1={} r2={}".format(r1, r2)
+        "Can\'t draw shorter var_bar with different radii. r1={} r2={}".format(r1, r2)
     assert not (kwargs and arc_func == b_arc),\
-        "Can't use keyword arguments with b_arc. {}".format(kwargs)
+        "Can\'t use keyword arguments with b_arc. {}".format(kwargs)
     d = dist(p1x, p1y, p2x, p2y)
     ri = r1 - r2
     if d > abs(ri):
@@ -647,7 +644,7 @@ def var_bar_pts(p1x, p1y, p2x, p2y, r1, r2=None, **kwargs):
     r2 = r2 if r2 is not None else r1
     shorter = kwargs.pop('shorter', 0)
     assert not (shorter and r1 != r2),\
-        "Can't draw shorter var_bar with different radii"
+        "Can\'t draw shorter var_bar with different radii"
     d = dist(p1x, p1y, p2x, p2y)
     ri = r1 - r2
     result = []
@@ -670,3 +667,43 @@ def rotate_offset_points(pts, angle, offx, offy, y0=0, x0=0):
     return [(((xp - x0) * cos(angle) - (yp - y0) * sin(angle)) + x0 + offx,
              ((yp - y0) * cos(angle) + (xp - x0) * sin(angle)) + y0 + offy)
             for xp, yp in pts]
+    
+def triangle_area(a, b, c):
+    area = (a[0] * (b[1] - c[1]) +
+            b[0] * (c[1] - a[1]) +
+            c[0] * (a[1] - b[1]))
+    return area
+
+def is_poly_self_intersecting(poly_points):
+    edges = pairwise(poly_points) + [(poly_points[-1], poly_points[0])]
+    for a, b in edges[::-1]:
+        for c, d in edges[2::]:
+            # test only non consecutive edges
+            if (a != c) and (b != c) and (a != d):
+                if simple_intersect(a, b, c, d):
+                    return True
+    return False
+
+def pairwise(iterable):
+    from itertools import tee
+    "s -> (s0, s1), (s1, s2), (s2, s3), ..."
+    a, b = tee(iterable)
+    next(b, None)
+    return list(zip(a, b))
+
+def ccw(*args):
+    """Returns True if the points are arranged counter-clockwise in the plane"""
+    if len(args) == 1:
+        a, b, c = args[0]
+    else:
+        a, b, c = args
+    return (b[0] - a[0]) * (c[1] - a[1]) > (b[1] - a[1]) * (c[0] - a[0])
+
+def simple_intersect(*args):
+    """Returns True if line segments intersect."""
+    if len(args) == 2:    
+        (a1, b1), (a2, b2) = args[0], args[1]
+    else:
+        a1, b1, a2, b2 = args
+    return ccw(a1, b1, a2) != ccw(a1, b1, b2) and ccw(a2, b2, a1) != ccw(a2, b2, b1)
+

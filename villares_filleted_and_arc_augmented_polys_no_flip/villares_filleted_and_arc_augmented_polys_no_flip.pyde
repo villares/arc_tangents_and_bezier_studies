@@ -2,7 +2,6 @@
 
 # github.com/villares/villares
 from arcs import arc_filleted_poly, arc_augmented_poly
-from line_geometry import draw_poly  # arc_augmented_poly needs line_geom. too
 
 def setup():
     size(400, 400)
@@ -25,3 +24,9 @@ def draw():
     stroke(180)
     noFill()
     for p, r in zip(p_list, r_list): circle(p[0], p[1], r*2)
+    
+def draw_poly(pts):
+    beginShape()
+    for x, y in pts:
+        vertex(x, y)
+    endShape(CLOSE)
