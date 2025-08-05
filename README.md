@@ -43,7 +43,7 @@ Processing *PShape* insfrastructure (and *Py5hape* that depends on it) does not 
 
 ### More arcs, the `p_arc` function, and the first shapes with tangents
 
-Other functions based on `b_arc`, and a polygonal approximation called `p_arc` can be found on [`arcs.py`](https://raw.githubusercontent.com/villares/villares/refs/heads/main/arcs.py)) and  [`arc_helpers.py`](https://raw.githubusercontent.com/villares/villares/refs/heads/main/arc_helpers.py):
+Other functions based on `b_arc`, and a polygonal approximation called `p_arc` can be found on [`arcs.py`](https://raw.githubusercontent.com/villares/villares/refs/heads/main/arcs.py) and  [`arc_helpers.py`](https://raw.githubusercontent.com/villares/villares/refs/heads/main/arc_helpers.py):
 
 - The `var_bar` and `bar` functions draw "two connected circles". They can be used with `p_arc`(a polygonal approximation of an arc) instead of the default `b_arc`. 
 
